@@ -1,0 +1,11 @@
+﻿<Controls:MetroWindow x:Class="Aries.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      Title="MainWindow"
+                      Height="350"
+                      Width="525">
+    <Grid>
+
+    </Grid>
+</Controls:MetroWindow>
