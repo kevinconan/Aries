@@ -92,6 +92,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\NullToFalseConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

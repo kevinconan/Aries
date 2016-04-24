@@ -1,9 +1,81 @@
-﻿<Controls:MetroWindow x:Class="Aries.MainWindow"
+﻿<Controls:MetroWindow
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Aries.MainWindow"
+                      xmlns:localConverters="clr-namespace:Aries.Converters"                  
                       Title="MapleStory登录器"
-                      Height="211.667"
-                      Width="295.833" Icon="BlueSnail.ico" ResizeMode="NoResize">
-    <Grid/>
+                      Height="350"
+                      Width="480" Icon="BlueSnail.ico" ResizeMode="NoResize">
+    <Controls:MetroWindow.Resources>
+        <localConverters:NullToFalseConverter x:Key="NullToFalseConverter"/>
+        <Style TargetType="{x:Type Label}" x:Key="LabelStyle" BasedOn="{StaticResource {x:Type Label}}">
+            <Setter Property="Width" Value="100"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Right"></Setter>
+        </Style>
+        <Style TargetType="{x:Type Label}" x:Key="SubLabelStyle" BasedOn="{StaticResource {x:Type Label}}">
+            <Setter Property="Margin" Value="10,0"></Setter>
+            <Setter Property="MinWidth" Value="60"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Right"></Setter>
+        </Style>
+        <Style TargetType="{x:Type Label}" x:Key="ValLabelStyle" BasedOn="{StaticResource {x:Type Label}}">
+            <Setter Property="MinWidth" Value="40"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Left"></Setter>
+        </Style>
+        <Style TargetType="{x:Type Label}" x:Key="ValLgLabelStyle" BasedOn="{StaticResource ValLabelStyle}">
+            <Setter Property="Width" Value="370"></Setter>
+        </Style>
+        <Style TargetType="{x:Type ComboBox}" x:Key="ComboBoxStyle" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="Margin" Value="10,0"></Setter>
+            <Setter Property="Width" Value="200"></Setter>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="ButtonStyle" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="10,0"></Setter>
+            <Setter Property="MinWidth" Value="50"></Setter>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="ButtonLgStyle" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="10,0"></Setter>
+            <Setter Property="MinWidth" Value="100"></Setter>
+            <Setter Property="FontSize" Value="24"></Setter>
+        </Style>
+        <Style TargetType="{x:Type StackPanel}" x:Key="RowStyle">
+            <Setter Property="Margin" Value="10,5"></Setter>
+            <Setter Property="Orientation" Value="Horizontal"></Setter>
+            <Setter Property="MinHeight" Value="26"></Setter>
+        </Style>
+    </Controls:MetroWindow.Resources>
+
+    <Grid>
+        <StackPanel VerticalAlignment="Top">
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource LabelStyle}" Content="服务器配置"/>
+                <ComboBox x:Name="cbServerConfig" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding}" DisplayMemberPath="ServerName" SelectionChanged="cbServerConfig_SelectionChanged"/>
+                <Button x:Name="btnNew" Content="新增" Style="{StaticResource ButtonStyle}"></Button>
+                <Button x:Name="btnEdit" Content="编辑" Style="{StaticResource ButtonStyle}"></Button>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource SubLabelStyle}" Content="地址"/>
+                <Label Style="{StaticResource ValLgLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.Host}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource SubLabelStyle}" Content="登陆端口"/>
+                <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.LoginPort}"/>
+                <Label Style="{StaticResource SubLabelStyle}" Content="商城端口"/>
+                <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ShopPort}"/>
+                <Label Style="{StaticResource SubLabelStyle}" Content="频道端口"/>
+                <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ChannelStartPort}"/>
+                <Label Style="{StaticResource SubLabelStyle}" Content="~" HorizontalContentAlignment="Center" MinWidth="10"/>
+                <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ChannelEndPort}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource SubLabelStyle}" Content="程序位置"/>
+                <Label Style="{StaticResource ValLgLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ExeLocation}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}" HorizontalAlignment="Center">
+                <Button x:Name="btnStart" Content="启动" Style="{StaticResource ButtonLgStyle}" IsEnabled="{Binding SelectedItem,ElementName=cbServerConfig,Converter={StaticResource NullToFalseConverter}}"></Button>
+                <Button x:Name="btnStop" Content="停止" Style="{StaticResource ButtonLgStyle}" Click="btnStop_Click" IsEnabled="False"></Button>
+            </StackPanel>
+            <TextBox x:Name="tbLogs" Height="100" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom" Margin="10"/>
+        </StackPanel>
+    </Grid>
 </Controls:MetroWindow>

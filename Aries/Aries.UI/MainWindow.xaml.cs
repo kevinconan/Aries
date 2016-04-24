@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Aries.Model;
 using MahApps.Metro.Controls;
 
 namespace Aries
@@ -21,15 +22,54 @@ namespace Aries
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        List<ServerConfig> serverConfigs;
+
         public MainWindow()
         {
             InitializeComponent();
-            test();
+
+            LoadServerConfigs();
         }
 
-        public void test()
+        //TODO: mock data
+        private void LoadServerConfigs()
+        {
+            serverConfigs =new List<ServerConfig> {
+                new ServerConfig
+                {
+                    ServerName="Test1",
+                    Host="kevinconan.vicp.cc",
+                    LoginPort=8484,
+                    ShopPort=8600,
+                    ChannelStartPort=7575,
+                    ChannelEndPort=7580,
+                    ExeLocation="MapleStory.exe",
+                    ID=1
+                },
+                 new ServerConfig
+                {
+                    ServerName="Test2",
+                    Host="127.0.0.1",
+                    LoginPort=8484,
+                    ShopPort=8600,
+                    ChannelStartPort=7575,
+                    ChannelEndPort=7580,
+                    ExeLocation="MapleStory.exe",
+                    ID=2
+                }
+            };
+
+            DataContext = serverConfigs;
+        }
+
+        private void cbServerConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            btnStart.IsEnabled = true;
         }
     }
 }
