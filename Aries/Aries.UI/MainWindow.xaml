@@ -2,10 +2,8 @@
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-                      Title="MainWindow"
-                      Height="350"
-                      Width="525">
-    <Grid>
-
-    </Grid>
+                      Title="MapleStory登录器"
+                      Height="211.667"
+                      Width="295.833" Icon="BlueSnail.ico">
+    <Grid/>
 </Controls:MetroWindow>

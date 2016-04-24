@@ -24,6 +24,12 @@ namespace Aries
         public MainWindow()
         {
             InitializeComponent();
+            test();
+        }
+
+        public void test()
+        {
+
         }
     }
 }
