@@ -1,11 +1,45 @@
-﻿<Controls:MetroWindow x:Class="Aries.EditServerConfigWindow"
+﻿<Controls:MetroWindow
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-                      Title="EditServerConfigWindow"
-                      Height="350"
-                      Width="525">
+                      xmlns:Model="clr-namespace:Aries.Model;assembly=Aries.Model" x:Class="Aries.EditServerConfigWindow"
+                      Title="编辑服务器配置信息"
+                      Height="250"
+                      Width="480" ResizeMode="NoResize" Icon="BlueSnail.ico">
+    <Controls:MetroWindow.DataContext>
+        <Model:ServerConfig/>
+    </Controls:MetroWindow.DataContext>
     <Grid>
-
+        <StackPanel VerticalAlignment="Top">
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource LabelStyle}" Content="配置名称"/>
+                <TextBox Style="{StaticResource ControlTextBoxLgStyle}" Text="{Binding ServerName}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource LabelStyle}" Content="服务器地址"/>
+                <TextBox Style="{StaticResource ControlTextBoxLgStyle}" Text="{Binding Host}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource LabelStyle}" Content="登陆端口"/>
+                <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding LoginPort}"/>
+                <Label Style="{StaticResource LabelStyle}" Content="商城端口"/>
+                <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding ShopPort}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource LabelStyle}" Content="频道开始端口"/>
+                <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding ChannelStartPort}"/>
+                <Label Style="{StaticResource LabelStyle}" Content="频道结束端口"/>
+                <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding ChannelEndPort}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+                <Label Style="{StaticResource LabelStyle}" Content="程序路径"/>
+                <TextBox x:Name="txtExeLocation" Style="{StaticResource ControlTextBoxLgStyle}" Width="249" Text="{Binding ExeLocation}"/>
+                <Button x:Name="btnSelect" Style="{StaticResource ButtonStyle}" Content="选择" Click="btnSelect_Click"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}" HorizontalAlignment="Center">
+                <Button x:Name="btnSave" Content="保存" Style="{StaticResource ButtonStyle}" Click="btnSave_Click"/>
+                <Button x:Name="btnCancel" Content="取消" Style="{StaticResource ButtonStyle}" Click="btnCancel_Click"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Controls:MetroWindow>
