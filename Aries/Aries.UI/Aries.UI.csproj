@@ -57,6 +57,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -90,6 +92,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AriesAboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AriesAboutBox.Designer.cs">
+      <DependentUpon>AriesAboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditServerConfigWindow.xaml.cs">
       <DependentUpon>EditServerConfigWindow.xaml</DependentUpon>
     </Compile>
@@ -118,6 +126,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="AriesAboutBox.resx">
+      <DependentUpon>AriesAboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

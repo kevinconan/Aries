@@ -172,5 +172,10 @@ namespace Aries
         {
             new EditServerConfigWindow(cbServerConfig.SelectedItem as ServerConfig).ShowDialog();
         }
+
+        private void btnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            new AriesAboutBox().ShowDialog();
+        }
     }
 }
