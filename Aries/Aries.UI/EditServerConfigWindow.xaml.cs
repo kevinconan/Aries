@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Aries.Model;
 using MahApps.Metro.Controls;
 
 namespace Aries
@@ -20,9 +21,38 @@ namespace Aries
     /// </summary>
     public partial class EditServerConfigWindow : MetroWindow
     {
-        public EditServerConfigWindow()
+        ServerConfig serverConfig;
+
+        public EditServerConfigWindow(ServerConfig serverConfig)
         {
             InitializeComponent();
+
+            this.serverConfig = serverConfig?.Clone() as ServerConfig ?? new ServerConfig();
+            DataContext = this.serverConfig;
+        }
+        public EditServerConfigWindow() : this(new ServerConfig()) { }
+
+        private void btnSelect_Click(object sender, RoutedEventArgs e)
+        {
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
+
+            openFileDlg.Filter = "应用程序 (*.exe)|*.exe";
+
+            if (openFileDlg.ShowDialog(this) ?? false)
+            {
+                txtExeLocation.Text = openFileDlg.FileName;
+            }
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

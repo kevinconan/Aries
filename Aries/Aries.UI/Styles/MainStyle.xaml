@@ -40,4 +40,11 @@
         <Setter Property="Orientation" Value="Horizontal"></Setter>
         <Setter Property="MinHeight" Value="26"></Setter>
     </Style>
+    <Style TargetType="TextBox" x:Key="ControlTextBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Width" Value="100"></Setter>
+        <Setter Property="Margin" Value="10,0"></Setter>
+    </Style>
+    <Style TargetType="TextBox" x:Key="ControlTextBoxLgStyle" BasedOn="{StaticResource ControlTextBoxStyle}">
+        <Setter Property="Width" Value="320"></Setter>
+    </Style>
 </ResourceDictionary>

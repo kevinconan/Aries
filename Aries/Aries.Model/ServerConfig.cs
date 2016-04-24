@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Aries.Model
 {
-    public class ServerConfig
+    public class ServerConfig : ICloneable
     {
         public int ID { get; set; }
 
@@ -38,5 +38,20 @@ namespace Aries.Model
         [Required]
         [StringLength(255)]
         public string ExeLocation { get; set; } = "MapleStory.exe";
+
+        public object Clone()
+        {
+            return new ServerConfig
+            {
+                ID = ID,
+                ServerName = ServerName,
+                Host = Host,
+                LoginPort = LoginPort,
+                ShopPort = ShopPort,
+                ChannelStartPort = ChannelStartPort,
+                ChannelEndPort = ChannelEndPort,
+                ExeLocation = ExeLocation,
+            };
+        }
     }
 }

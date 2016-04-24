@@ -16,8 +16,8 @@
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="服务器配置"/>
                 <ComboBox x:Name="cbServerConfig" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding}" DisplayMemberPath="ServerName" SelectionChanged="cbServerConfig_SelectionChanged"/>
-                <Button x:Name="btnNew" Content="新增" Style="{StaticResource ButtonStyle}"></Button>
-                <Button x:Name="btnEdit" Content="编辑" Style="{StaticResource ButtonStyle}"></Button>
+                <Button x:Name="btnNew" Content="新增" Style="{StaticResource ButtonStyle}" Click="btnNew_Click"></Button>
+                <Button x:Name="btnEdit" Content="编辑" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click"></Button>
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource SubLabelStyle}" Content="地址"/>

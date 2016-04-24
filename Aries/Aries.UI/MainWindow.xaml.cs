@@ -82,5 +82,14 @@ namespace Aries
         }
         #endregion
 
+        private void btnNew_Click(object sender, RoutedEventArgs e)
+        {
+            new EditServerConfigWindow().ShowDialog();
+        }
+
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            new EditServerConfigWindow(cbServerConfig.SelectedItem as ServerConfig).ShowDialog();
+        }
     }
 }
