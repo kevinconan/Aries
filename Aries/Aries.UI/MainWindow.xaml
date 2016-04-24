@@ -4,6 +4,6 @@
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
                       Title="MapleStory登录器"
                       Height="211.667"
-                      Width="295.833" Icon="BlueSnail.ico">
+                      Width="295.833" Icon="BlueSnail.ico" ResizeMode="NoResize">
     <Grid/>
 </Controls:MetroWindow>
