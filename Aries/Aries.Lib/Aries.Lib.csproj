@@ -61,7 +61,7 @@
   <ItemGroup>
     <Compile Include="JsonHelper.cs" />
     <Compile Include="MapleStoryInspector.cs" />
-    <Compile Include="PortForwardingService.cs" />
+    <Compile Include="PortForwardingWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ namespace Aris.Lib
         }
     }
 
-    class PortForwardingService
+    class PortForwardingWorker
     {
 
         public WarpMessage WarpMessage;
@@ -38,7 +38,7 @@ namespace Aris.Lib
         Dictionary<NetworkStream, bool> first = new Dictionary<NetworkStream, bool>();
         TcpListener listener;
 
-        public PortForwardingService(int localPort, string host, int port)
+        public PortForwardingWorker(int localPort, string host, int port)
         {
             this.host = host;
             this.port = port;
@@ -68,7 +68,7 @@ namespace Aris.Lib
             }
             catch (Exception)
             {
-                SendErrorMessage("端口映射启动失败,请检查端口["+port+"]是否被占用");
+                SendErrorMessage($"端口映射启动失败,请检查端口[{port}]是否被占用");
             }
             
 
@@ -116,10 +116,7 @@ namespace Aris.Lib
         /// <param name="Msg"></param>
         private void SendMessage(string Msg)
         {
-            if (WarpMessage != null)
-            {
-                WarpMessage(MessageType.Tips, Msg);
-            }
+            WarpMessage?.Invoke(MessageType.Tips, Msg);
         }
         /// <summary>
         /// 发送错误消息
@@ -127,13 +124,7 @@ namespace Aris.Lib
         /// <param name="Msg"></param>
         private void SendErrorMessage(string Msg)
         {
-            if (WarpMessage != null)
-            {
-                WarpMessage(MessageType.Error, Msg);
-            }
-            {
-
-            }
+            WarpMessage?.Invoke(MessageType.Error, Msg);
         }
 
     }

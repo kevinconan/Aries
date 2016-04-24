@@ -44,7 +44,7 @@ namespace Aries
         //TODO: mock data
         private void LoadServerConfigs()
         {
-            serverConfigs =new List<ServerConfig> {
+            serverConfigs = new List<ServerConfig> {
                 new ServerConfig
                 {
                     ServerName="Test1",
@@ -69,15 +69,15 @@ namespace Aries
                 }
             };
 
-            cbServerConfig.DataContext= serverConfigs;
+            cbServerConfig.DataContext = serverConfigs;
         }
 
         private void InitMapleInspector()
         {
             inspector = new MapleStoryInspector();
             inspector.OnMapleStoryStartSuccess += new OnMapleStoryStartSuccess(OnMapleStoryStartSuccess);
-            inspector.OnMapleStoryStartFail += new OnMapleStoryStartFail(OnMapleStoryStartFail);
-            inspector.OnMapleStoryShutdown += new OnMapleStoryShutdown(OnMapleStoryShutdown);
+            inspector.OnMapleStoryStartFail += OnMapleStoryStartFail;
+            inspector.OnMapleStoryShutdown += OnMapleStoryShutdown;
             inspector.OnMapleStoryWindowChange += new OnMapleStoryWindowChange(OnMapleStoryWindowChange);
             inspector.WarpMessage += new WarpMessage(WarpMessage);
             inspector.GetMapleMainPath += new GetMapleMainPath(GetMapleMainPath);
@@ -112,16 +112,18 @@ namespace Aries
 
         public void OnMapleStoryShutdown()
         {
-            Dispatcher.Invoke(() => {
+            Dispatcher.Invoke(() =>
+            {
                 btnStart.IsEnabled = true;
                 btnStop.IsEnabled = false;
             });
-            
+
         }
 
         public void OnMapleStoryStartFail()
         {
-            Dispatcher.Invoke(() => {
+            Dispatcher.Invoke(() =>
+            {
                 btnStart.IsEnabled = true;
                 btnStop.IsEnabled = false;
             });
@@ -129,7 +131,8 @@ namespace Aries
 
         public void OnMapleStoryStartSuccess()
         {
-            Dispatcher.Invoke(() => {
+            Dispatcher.Invoke(() =>
+            {
                 btnStart.IsEnabled = false;
                 btnStop.IsEnabled = true;
             });
@@ -137,7 +140,8 @@ namespace Aries
 
         public void WarpMessage(MessageType type, string message)
         {
-            this.Dispatcher.Invoke(() => {
+            this.Dispatcher.Invoke(() =>
+            {
                 tbLogs.Text += (type == MessageType.Tips ? "[信息]" : "[错误]") + message + "\n";
                 tbLogs.ScrollToEnd();
             });
@@ -151,7 +155,7 @@ namespace Aries
             //fbd.InitialDirectory = readMapleRegInf();
             if (fbd.ShowDialog() == true)
             {
-                
+
                 return fbd.FileName;
             }
 

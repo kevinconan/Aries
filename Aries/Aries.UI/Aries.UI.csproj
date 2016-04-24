@@ -50,16 +50,19 @@
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MahApps.Metro, Version=1.2.4.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -142,6 +145,7 @@
     <ProjectReference Include="..\Aries.Model\Aries.Model.csproj">
       <Project>{c340bd4e-8e40-4a0c-9dc0-d1fa12fc34ad}</Project>
       <Name>Aries.Model</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -158,12 +162,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\Aries.Model\bin\out\Aries.Model.dll">
+    <EmbeddedResource Include="..\Aries.Model\bin\out\Aries.Model.dll">
       <Link>DllsAsResource\Aries.Model.dll</Link>
-    </Content>
-    <Content Include="..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll">
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll">
       <Link>DllsAsResource\Newtonsoft.Json.dll</Link>
-    </Content>
+    </EmbeddedResource>
     <Resource Include="BlueSnail.ico" />
   </ItemGroup>
   <ItemGroup />
