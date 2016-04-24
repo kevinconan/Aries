@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Aries.Lib
 {
-    class MapleStoryInspecotor
+    public class MapleStoryInspecotor
     {
+
+        public MapleStoryInspecotor() : this("MapleStory.exe") { }
+        public MapleStoryInspecotor(string filePath)
+        {
+
+        }
     }
 }
