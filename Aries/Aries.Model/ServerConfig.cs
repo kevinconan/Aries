@@ -38,5 +38,7 @@ namespace Aries.Model
         [Required]
         [StringLength(255)]
         public string ExeLocation { get; set; } = "MapleStory.exe";
+
+        public bool Running { get; set; }
     }
 }

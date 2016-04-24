@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using Aries.Model;
 using MahApps.Metro.Controls;
 using Aries.Lib;
+using System.Threading;
+using Microsoft.Win32;
 
 namespace Aries
 {
@@ -32,6 +34,11 @@ namespace Aries
             InitializeComponent();
 
             LoadServerConfigs();
+
+            InitMapleInspector();
+
+            DataContext = new Dictionary<string, object>();
+            tbLogs.DataContext = "";
         }
 
         //TODO: mock data
@@ -62,7 +69,19 @@ namespace Aries
                 }
             };
 
-            DataContext = serverConfigs;
+            cbServerConfig.DataContext= serverConfigs;
+        }
+
+        private void InitMapleInspector()
+        {
+            inspector = new MapleStoryInspector();
+            inspector.OnMapleStoryStartSuccess += new OnMapleStoryStartSuccess(OnMapleStoryStartSuccess);
+            inspector.OnMapleStoryStartFail += new OnMapleStoryStartFail(OnMapleStoryStartFail);
+            inspector.OnMapleStoryShutdown += new OnMapleStoryShutdown(OnMapleStoryShutdown);
+            inspector.OnMapleStoryWindowChange += new OnMapleStoryWindowChange(OnMapleStoryWindowChange);
+            inspector.WarpMessage += new WarpMessage(WarpMessage);
+            inspector.GetMapleMainPath += new GetMapleMainPath(GetMapleMainPath);
+
         }
 
         private void cbServerConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -73,12 +92,70 @@ namespace Aries
         #region 按钮事件
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
-            btnStart.IsEnabled = true;
+            btnStop.IsEnabled = false;
+            inspector.Stop();
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
+            btnStart.IsEnabled = false;
+            inspector.MapleStoryExe = (cbServerConfig.SelectedItem as ServerConfig).ExeLocation;
+            inspector.Launch();
+        }
+        #endregion
 
+        #region MapleInspector代理
+        public void OnMapleStoryWindowChange(MapleStoryWindowType windowType)
+        {
+
+        }
+
+        public void OnMapleStoryShutdown()
+        {
+            Dispatcher.Invoke(() => {
+                btnStart.IsEnabled = true;
+                btnStop.IsEnabled = false;
+            });
+            
+        }
+
+        public void OnMapleStoryStartFail()
+        {
+            Dispatcher.Invoke(() => {
+                btnStart.IsEnabled = true;
+                btnStop.IsEnabled = false;
+            });
+        }
+
+        public void OnMapleStoryStartSuccess()
+        {
+            Dispatcher.Invoke(() => {
+                btnStart.IsEnabled = false;
+                btnStop.IsEnabled = true;
+            });
+        }
+
+        public void WarpMessage(MessageType type, string message)
+        {
+            this.Dispatcher.Invoke(() => {
+                tbLogs.Text += (type == MessageType.Tips ? "[信息]" : "[错误]") + message + "\n";
+                tbLogs.ScrollToEnd();
+            });
+            //tbLogs.DataContext += type == MessageType.Tips ? "[信息]" : "[错误]"+message+"\n";
+        }
+
+        public string GetMapleMainPath()
+        {
+            OpenFileDialog fbd = new OpenFileDialog();
+            fbd.Filter = "冒险岛主程序|MapleStory.exe";
+            //fbd.InitialDirectory = readMapleRegInf();
+            if (fbd.ShowDialog() == true)
+            {
+                
+                return fbd.FileName;
+            }
+
+            return null;
         }
         #endregion
 

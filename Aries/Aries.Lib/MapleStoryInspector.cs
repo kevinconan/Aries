@@ -29,6 +29,8 @@ namespace Aries.Lib
 
     public delegate void OnMapleStoryStartFail();
 
+    public delegate void OnMapleStoryStartSuccess();
+
     public delegate void WarpMessage(MessageType type, string message);
 
     public delegate string GetMapleMainPath();
@@ -52,11 +54,13 @@ namespace Aries.Lib
 
         public OnMapleStoryStartFail OnMapleStoryStartFail;
 
+        public OnMapleStoryStartSuccess OnMapleStoryStartSuccess;
+
         public GetMapleMainPath GetMapleMainPath;
 
         public WarpMessage WarpMessage;
 
-        private string mapleStoryExe;
+        public string MapleStoryExe;
 
         private Process MapleProcess;
 
@@ -67,10 +71,10 @@ namespace Aries.Lib
         #endregion
 
         #region 构造
-        public MapleStoryInspector() : this("MapleStory.exe") { }
+        public MapleStoryInspector() { }
         public MapleStoryInspector(string filePath)
         {
-            this.mapleStoryExe = filePath;
+            this.MapleStoryExe = filePath;
         }
         #endregion
 
@@ -148,8 +152,7 @@ namespace Aries.Lib
 
             }else
             {
-                MainInspectingThread = new Thread(MaingInspectingWorking) { IsBackground = true };
-                MainInspectingThread.Start();
+                HookMapleProcess();
             }
 
             
@@ -157,15 +160,16 @@ namespace Aries.Lib
 
         private void LaunchNewMaple()
         {
-            if (!File.Exists(mapleStoryExe))
+            if (!File.Exists(MapleStoryExe))
             {
                 if (GetMapleMainPath != null)
                 {
-                    mapleStoryExe = GetMapleMainPath();
+                    SendMessage("当前设置的冒险岛主程序路径错误，请选择...");
+                    MapleStoryExe = GetMapleMainPath();
 
-                    if (mapleStoryExe == "" || mapleStoryExe == null)
+                    if (MapleStoryExe == "" || MapleStoryExe == null)
                     {
-                        SendErrorMessage("找不到冒险岛主程序，启动失败！");
+                        SendMessage("用户已取消！");
                         if (OnMapleStoryStartFail != null)
                         {
                             OnMapleStoryStartFail();
@@ -184,7 +188,7 @@ namespace Aries.Lib
                 }
             }
 
-            MapleProcess = Process.Start(mapleStoryExe, "221.231.130.70 8484");
+            MapleProcess = Process.Start(MapleStoryExe, "221.231.130.70 8484");
 
             DateTime start = DateTime.Now;
             IntPtr handle = IntPtr.Zero;
@@ -215,12 +219,24 @@ namespace Aries.Lib
             MapleProcess.CloseMainWindow();
             SendMessage("已跳过引导页....");
 
+            HookMapleProcess();
+        }
+
+        private void HookMapleProcess()
+        {
             MapleProcess.EnableRaisingEvents = true;
             MapleProcess.Exited += new EventHandler(ProcessExited);
             SendMessage("冒险岛进程Hook完毕...");
 
+            if (OnMapleStoryStartSuccess != null)
+            {
+                OnMapleStoryStartSuccess();
+                SendMessage("启动成功！");
+            }
+
             MainInspectingThread = new Thread(MaingInspectingWorking) { IsBackground = true };
             MainInspectingThread.Start();
+            
         }
 
         private void ProcessExited(object sender, EventArgs e)

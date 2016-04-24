@@ -11,6 +11,10 @@ namespace Aries.Converters
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if(value is bool)
+            {
+                return value;
+            }
             return value != null;
         }
 
