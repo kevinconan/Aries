@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Aries.Model;
 using MahApps.Metro.Controls;
+using Aries.Lib;
 
 namespace Aries
 {
@@ -23,6 +24,8 @@ namespace Aries
     public partial class MainWindow : MetroWindow
     {
         List<ServerConfig> serverConfigs;
+
+        public MapleStoryInspector inspector;
 
         public MainWindow()
         {
@@ -67,9 +70,17 @@ namespace Aries
 
         }
 
+        #region 按钮事件
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             btnStart.IsEnabled = true;
         }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        #endregion
+
     }
 }
