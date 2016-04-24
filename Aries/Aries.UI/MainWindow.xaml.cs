@@ -25,9 +25,11 @@ namespace Aries
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        List<ServerConfig> serverConfigs;
+        Dictionary<int,ServerConfig> serverConfigs;
 
         public MapleStoryInspector inspector;
+
+        public PortForwardingService portService;
 
         public MainWindow()
         {
@@ -37,39 +39,21 @@ namespace Aries
 
             InitMapleInspector();
 
-            DataContext = new Dictionary<string, object>();
-            tbLogs.DataContext = "";
+            InitPortForwarding();
+
+
+
         }
 
-        //TODO: mock data
-        private void LoadServerConfigs()
+    //TODO: mock data
+    private void LoadServerConfigs()
         {
-            serverConfigs = new List<ServerConfig> {
-                new ServerConfig
-                {
-                    ServerName="Test1",
-                    Host="kevinconan.vicp.cc",
-                    LoginPort=8484,
-                    ShopPort=8600,
-                    ChannelStartPort=7575,
-                    ChannelEndPort=7580,
-                    ExeLocation="MapleStory.exe",
-                    ID=1
-                },
-                 new ServerConfig
-                {
-                    ServerName="Test2",
-                    Host="127.0.0.1",
-                    LoginPort=8484,
-                    ShopPort=8600,
-                    ChannelStartPort=7575,
-                    ChannelEndPort=7580,
-                    ExeLocation="MapleStory.exe",
-                    ID=2
-                }
-            };
+            serverConfigs = ServiceConfigService.LoadAll();
+            ServiceConfigService.SaveAll();
 
-            cbServerConfig.DataContext = serverConfigs;
+            cbServerConfig.DataContext = serverConfigs.Values;
+
+            cbServerConfig.SelectedValue = ServiceConfigService.LastId;
         }
 
         private void InitMapleInspector()
@@ -84,6 +68,26 @@ namespace Aries
 
         }
 
+        private void InitPortForwarding()
+        {
+            portService = new PortForwardingService();
+            portService.WarpMessage += new WarpMessage(WarpMessage);
+        }
+
+        private void StartForwarding()
+        {
+            ServerConfig cfg = serverConfigs[Convert.ToInt32(cbServerConfig.SelectedValue)];
+            portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
+            portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
+
+            for (int i = cfg.ChannelStartPort,j = 0; i <= cfg.ChannelEndPort; i++,j++)
+            {
+                portService.AddForwarding(7575 + j, cfg.Host, cfg.ChannelStartPort);
+            }
+
+            portService.Launch();
+        }
+
         private void cbServerConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -94,6 +98,7 @@ namespace Aries
         {
             btnStop.IsEnabled = false;
             inspector.Stop();
+            portService.Stop();
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -101,6 +106,11 @@ namespace Aries
             btnStart.IsEnabled = false;
             inspector.MapleStoryExe = (cbServerConfig.SelectedItem as ServerConfig).ExeLocation;
             inspector.Launch();
+            StartForwarding();
+
+
+
+
         }
         #endregion
 

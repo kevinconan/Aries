@@ -27,9 +27,6 @@ namespace Aris.Lib
 
     class PortForwardingWorker
     {
-
-        public WarpMessage WarpMessage;
-
         public bool IsRunning { get; set; } = false;
 
         string host;
@@ -37,6 +34,8 @@ namespace Aris.Lib
         int localPort;
         Dictionary<NetworkStream, bool> first = new Dictionary<NetworkStream, bool>();
         TcpListener listener;
+
+        public Action<string> show;
 
         public PortForwardingWorker(int localPort, string host, int port)
         {
@@ -65,10 +64,11 @@ namespace Aris.Lib
             try
             {
                 listener.Start();
+                show?.Invoke($"端口[{localPort}]映射成功");
             }
             catch (Exception)
             {
-                SendErrorMessage($"端口映射启动失败,请检查端口[{port}]是否被占用");
+                show?.Invoke($"端口映射启动失败,请检查端口[{localPort}]是否被占用");
             }
             
 
@@ -79,6 +79,8 @@ namespace Aris.Lib
                     var outgoing = await listener.AcceptTcpClientAsync();
 
                     var remote = new TcpClient(host, port);
+
+                    show?.Invoke($"端口[{localPort}]已连接");
 
                     var localStream = new NetworkStream(outgoing.Client);
                     var remoteStream = new NetworkStream(remote.Client);
@@ -92,13 +94,14 @@ namespace Aris.Lib
                     {
                         while (true)
                         {
+
                             if (!remote.Connected() || !outgoing.Connected())
                             {
                                 localStream.Close();
                                 remoteStream.Close();
                                 remote.Close();
                                 outgoing.Close();
-
+                                show?.Invoke($"端口[{localPort}]已断开");
                                 return;
                             }
                             Thread.Sleep(1000);
@@ -108,23 +111,6 @@ namespace Aris.Lib
                 }
                 catch { }
             }
-        }
-
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="Msg"></param>
-        private void SendMessage(string Msg)
-        {
-            WarpMessage?.Invoke(MessageType.Tips, Msg);
-        }
-        /// <summary>
-        /// 发送错误消息
-        /// </summary>
-        /// <param name="Msg"></param>
-        private void SendErrorMessage(string Msg)
-        {
-            WarpMessage?.Invoke(MessageType.Error, Msg);
         }
 
     }
