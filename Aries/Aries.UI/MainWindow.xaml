@@ -9,6 +9,9 @@
                       Width="480" Icon="BlueSnail.ico" ResizeMode="NoResize">
     <Controls:MetroWindow.Resources>
         <localConverters:NullToFalseConverter x:Key="NullToFalseConverter"/>
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"></Setter>
+        </Style>
         <Style TargetType="{x:Type Label}" x:Key="LabelStyle" BasedOn="{StaticResource {x:Type Label}}">
             <Setter Property="Width" Value="100"></Setter>
             <Setter Property="HorizontalContentAlignment" Value="Right"></Setter>
@@ -32,11 +35,13 @@
         <Style TargetType="{x:Type Button}" x:Key="ButtonStyle" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Margin" Value="10,0"></Setter>
             <Setter Property="MinWidth" Value="50"></Setter>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"></Setter>
         </Style>
         <Style TargetType="{x:Type Button}" x:Key="ButtonLgStyle" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Margin" Value="10,0"></Setter>
             <Setter Property="MinWidth" Value="100"></Setter>
             <Setter Property="FontSize" Value="24"></Setter>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"></Setter>
         </Style>
         <Style TargetType="{x:Type StackPanel}" x:Key="RowStyle">
             <Setter Property="Margin" Value="10,5"></Setter>
