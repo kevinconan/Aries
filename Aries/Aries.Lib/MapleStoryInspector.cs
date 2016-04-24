@@ -33,7 +33,7 @@ namespace Aries.Lib
 
     public delegate string GetMapleMainPath();
 
-    public class MapleStoryInspecotor
+    public class MapleStoryInspector
     {
         #region Win32API
         [DllImport("User32.dll", EntryPoint = "SendMessage")]
@@ -67,8 +67,8 @@ namespace Aries.Lib
         #endregion
 
         #region 构造
-        public MapleStoryInspecotor() : this("MapleStory.exe") { }
-        public MapleStoryInspecotor(string filePath)
+        public MapleStoryInspector() : this("MapleStory.exe") { }
+        public MapleStoryInspector(string filePath)
         {
             this.mapleStoryExe = filePath;
         }
@@ -86,9 +86,9 @@ namespace Aries.Lib
         {
             try
             {
-                SendMessage("正在停止冒险岛....");
+                
                 MainInspectingThread.Abort();
-
+                MapleProcess.Kill();
             }
             catch (Exception)
             {
