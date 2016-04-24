@@ -80,7 +80,7 @@
                 <Button x:Name="btnStart" Content="启动" Style="{StaticResource ButtonLgStyle}" IsEnabled="{Binding SelectedItem,ElementName=cbServerConfig,Converter={StaticResource NullToFalseConverter}}" Click="btnStart_Click"></Button>
                 <Button x:Name="btnStop" Content="停止" Style="{StaticResource ButtonLgStyle}" Click="btnStop_Click" IsEnabled="False"></Button>
             </StackPanel>
-            <TextBox x:Name="tbLogs" Height="100" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Bottom" Margin="10"/>
+            <TextBox x:Name="tbLogs" Height="100" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="10"/>
         </StackPanel>
     </Grid>
 </Controls:MetroWindow>
