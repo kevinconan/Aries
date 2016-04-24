@@ -50,7 +50,7 @@ namespace Aries.Lib
 
         public OnMapleStoryWindowChange OnMapleStoryWindowChange;
 
-        public OnMapleStoryShutdown OnMapleStoryShutdown;
+        public Action OnMapleStoryShutdown;
 
         public OnMapleStoryStartFail OnMapleStoryStartFail;
 
@@ -170,20 +170,14 @@ namespace Aries.Lib
                     if (MapleStoryExe == "" || MapleStoryExe == null)
                     {
                         SendMessage("用户已取消！");
-                        if (OnMapleStoryStartFail != null)
-                        {
-                            OnMapleStoryStartFail();
-                        }
+                        OnMapleStoryStartFail?.Invoke();
                         return;
                     }
                 }
                 else
                 {
                     SendErrorMessage("找不到冒险岛主程序，启动失败！");
-                    if (OnMapleStoryStartFail != null)
-                    {
-                        OnMapleStoryStartFail();
-                    }
+                    OnMapleStoryStartFail?.Invoke();
                     return;
                 }
             }
@@ -210,10 +204,7 @@ namespace Aries.Lib
             if (handle == IntPtr.Zero)
             {
                 SendErrorMessage("检测冒险岛进程超时...启动失败");
-                if (OnMapleStoryStartFail != null)
-                {
-                    OnMapleStoryStartFail();
-                }
+                OnMapleStoryStartFail?.Invoke();
             }
 
             MapleProcess.CloseMainWindow();
@@ -267,10 +258,7 @@ namespace Aries.Lib
         /// <param name="Msg"></param>
         private void SendMessage(string Msg)
         {
-            if (WarpMessage != null)
-            {
-                WarpMessage(MessageType.Tips, Msg);
-            }
+            WarpMessage?.Invoke(MessageType.Tips, Msg);
         }
         /// <summary>
         /// 发送错误消息
@@ -278,13 +266,7 @@ namespace Aries.Lib
         /// <param name="Msg"></param>
         private void SendErrorMessage(string Msg)
         {
-            if (WarpMessage != null)
-            {
-                WarpMessage(MessageType.Error, Msg);
-            }
-            {
-
-            }
+            WarpMessage?.Invoke(MessageType.Error, Msg);
         }
 
         #endregion
