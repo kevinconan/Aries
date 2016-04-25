@@ -21,11 +21,11 @@ namespace Aries.Lib
             return JsonHelper.SerializeObject(sc);
         }
     }
-    public static class ServiceConfigService
+    public static class ServerConfigService
     {
 
         public static WarpMessage WarpMessage;
-        public static readonly string FILE = Environment.GetFolderPath( Environment.SpecialFolder.UserProfile)+ @"\Aries.json";
+        public static readonly string FILE = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Aries.json";
         static string LoadFile()
         {
             try
@@ -91,8 +91,22 @@ namespace Aries.Lib
                 writer.Write(JsonHelper.SerializeObject(new { configs = serverConfigs.Values, lastId = LastId }));
             }
 
-            fi.Attributes |= FileAttributes.System|FileAttributes.Hidden;
-       
+            fi.Attributes |= FileAttributes.System | FileAttributes.Hidden;
+
+        }
+
+        public static void Save(ServerConfig serverConfig)
+        {
+            if (serverConfig.ID == 0)
+            {
+                var q = from id in serverConfigs.Keys
+                        select id;
+                serverConfig.ID = q.Max() + 1;
+            }
+
+            serverConfigs[serverConfig.ID] = serverConfig;
+
+            SaveAll();
         }
 
     }

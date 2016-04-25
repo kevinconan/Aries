@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Aries.Lib;
 using Aries.Model;
 using MahApps.Metro.Controls;
 
@@ -47,7 +48,8 @@ namespace Aries
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-
+            ServerConfigService.Save(serverConfig);
+            this.Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)

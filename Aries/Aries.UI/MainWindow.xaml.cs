@@ -25,7 +25,7 @@ namespace Aries
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        Dictionary<int,ServerConfig> serverConfigs;
+        Dictionary<int, ServerConfig> serverConfigs;
 
         public MapleStoryInspector inspector;
 
@@ -45,15 +45,14 @@ namespace Aries
 
         }
 
-    //TODO: mock data
-    private void LoadServerConfigs()
+        //TODO: mock data
+        private void LoadServerConfigs()
         {
-            serverConfigs = ServiceConfigService.LoadAll();
-            ServiceConfigService.SaveAll();
+            serverConfigs = ServerConfigService.LoadAll();
 
             cbServerConfig.DataContext = serverConfigs.Values;
 
-            cbServerConfig.SelectedValue = ServiceConfigService.LastId;
+            cbServerConfig.SelectedValue = ServerConfigService.LastId;
         }
 
         private void InitMapleInspector()
@@ -80,7 +79,7 @@ namespace Aries
             portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
             portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
 
-            for (int i = cfg.ChannelStartPort,j = 0; i <= cfg.ChannelEndPort; i++,j++)
+            for (int i = cfg.ChannelStartPort, j = 0; i <= cfg.ChannelEndPort; i++, j++)
             {
                 portService.AddForwarding(7575 + j, cfg.Host, cfg.ChannelStartPort);
             }
@@ -108,8 +107,9 @@ namespace Aries
             inspector.Launch();
             StartForwarding();
 
+            ServerConfigService.LastId = (int)cbServerConfig.SelectedValue;
 
-
+            ServerConfigService.SaveAll();
 
         }
         #endregion
