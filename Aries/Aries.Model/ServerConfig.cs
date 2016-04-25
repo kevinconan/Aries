@@ -7,37 +7,54 @@ using System.Threading.Tasks;
 
 namespace Aries.Model
 {
-    public class ServerConfig : ICloneable
+    public class ServerConfig : ObservableObject, ICloneable
     {
-        public int ID { get; set; }
+        private int id;
+        private string serverName;
+        private string host;
+        private int loginPort = 8484;
+        private int shopPort = 8600;
+        private int channelStartPort = 7575;
+        private int channelEndPort = 7580;
+        private string exeLocation = "MapleStory.exe";
+
+        public int ID
+        {
+            get { return id; }
+            set
+            {
+                id = value;
+                RaisePropertyChanged("ID");
+            }
+        }
 
         [Required]
         [StringLength(50)]
-        public string ServerName { get; set; }
+        public string ServerName { get { return serverName; } set { serverName = value; RaisePropertyChanged("ServerName"); } }
 
         [Required]
         [StringLength(50)]
-        public string Host { get; set; }
+        public string Host { get { return host; } set { host = value; RaisePropertyChanged("Host"); } }
 
         [Required]
         [Range(1, 65535, ErrorMessage = "端口号范围必须介于1到65535之间")]
-        public int LoginPort { get; set; } = 8484;
+        public int LoginPort { get { return loginPort; } set { loginPort = value; RaisePropertyChanged("LoginPort"); } }
 
         [Required]
         [Range(1, 65535, ErrorMessage = "端口号范围必须介于1到65535之间")]
-        public int ShopPort { get; set; } = 8600;
+        public int ShopPort { get { return shopPort; } set { shopPort = value; RaisePropertyChanged("ShopPort"); } }
 
         [Required]
         [Range(1, 65535, ErrorMessage = "端口号范围必须介于1到65535之间")]
-        public int ChannelStartPort { get; set; } = 7575;
+        public int ChannelStartPort { get { return channelStartPort; } set { channelStartPort = value; RaisePropertyChanged("ChannelStartPort"); } }
 
         [Required]
         [Range(1, 65535, ErrorMessage = "端口号范围必须介于1到65535之间")]
-        public int ChannelEndPort { get; set; } = 7580;
+        public int ChannelEndPort { get { return channelEndPort; } set { channelEndPort = value; RaisePropertyChanged("ChannelEndPort"); } }
 
         [Required]
         [StringLength(255)]
-        public string ExeLocation { get; set; } = "MapleStory.exe";
+        public string ExeLocation { get { return exeLocation; } set { exeLocation = value; RaisePropertyChanged("ExeLocation"); } }
 
         public object Clone()
         {

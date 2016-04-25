@@ -6,9 +6,6 @@
                       Title="编辑服务器配置信息"
                       Height="250"
                       Width="480" ResizeMode="NoResize" Icon="BlueSnail.ico">
-    <Controls:MetroWindow.DataContext>
-        <Model:ServerConfig/>
-    </Controls:MetroWindow.DataContext>
     <Grid>
         <StackPanel VerticalAlignment="Top">
             <StackPanel Style="{StaticResource RowStyle}">

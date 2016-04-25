@@ -50,7 +50,7 @@ namespace Aries
         {
             serverConfigs = ServerConfigService.LoadAll();
 
-            cbServerConfig.DataContext = serverConfigs.Values;
+            cbServerConfig.DataContext = serverConfigs;
 
             cbServerConfig.SelectedValue = ServerConfigService.LastId;
         }

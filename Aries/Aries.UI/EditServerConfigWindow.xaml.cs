@@ -42,7 +42,7 @@ namespace Aries
 
             if (openFileDlg.ShowDialog(this) ?? false)
             {
-                txtExeLocation.Text = openFileDlg.FileName;
+                serverConfig.ExeLocation = openFileDlg.FileName;
             }
         }
 

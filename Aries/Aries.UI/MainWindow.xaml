@@ -25,7 +25,7 @@
         <StackPanel VerticalAlignment="Top">
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="服务器配置"/>
-                <ComboBox x:Name="cbServerConfig" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding}" DisplayMemberPath="ServerName" SelectedValuePath="ID" SelectionChanged="cbServerConfig_SelectionChanged"/>
+                <ComboBox x:Name="cbServerConfig" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding Values}" DisplayMemberPath="ServerName" SelectedValuePath="ID" SelectionChanged="cbServerConfig_SelectionChanged"/>
                 <Button x:Name="btnNew" Content="新增" Style="{StaticResource ButtonStyle}" Click="btnNew_Click" FontSize="12"/>
                 <Button x:Name="btnEdit" Content="编辑" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click" FontSize="12"/>
             </StackPanel>

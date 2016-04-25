@@ -20,13 +20,20 @@ namespace Aries.Lib
         {
             return JsonHelper.SerializeObject(sc);
         }
+        public static void UpdateData(this ServerConfig sc, ServerConfig other)
+        {
+            foreach (var p in sc.GetType().GetProperties())
+            {
+                p.SetValue(sc, p.GetValue(other));
+            }
+        }
     }
     public static class ServerConfigService
     {
 
         public static WarpMessage WarpMessage;
         public static readonly string ARIESDIR = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Aries\";
-        public static readonly string FILE = ARIESDIR+ @"Aries.json";
+        public static readonly string FILE = ARIESDIR + @"Aries.json";
         static string LoadFile()
         {
             try
@@ -54,14 +61,6 @@ namespace Aries.Lib
                     ID=1,
                     ServerName="Kevin's Server",
                     Host="kevinconan.vicp.cc"
-                },
-                new ServerConfig {
-                    ID=2,
-                    ServerName="创意冒险岛",
-                    Host="117.25.135.249",
-                    LoginPort = 8585,
-                    ChannelStartPort = 7675,
-                    ChannelEndPort = 7679
                 }
             },
                 lastId = 0
@@ -108,9 +107,12 @@ namespace Aries.Lib
                 var q = from id in serverConfigs.Keys
                         select id;
                 serverConfig.ID = q.Max() + 1;
+                serverConfigs[serverConfig.ID] = serverConfig;
             }
-
-            serverConfigs[serverConfig.ID] = serverConfig;
+            else
+            {
+                serverConfigs[serverConfig.ID].UpdateData(serverConfig);
+            }
 
             SaveAll();
         }
