@@ -10,7 +10,17 @@
     <Controls:MetroWindow.Resources>
         <localConverters:NullToFalseConverter x:Key="NullToFalseConverter"/>
     </Controls:MetroWindow.Resources>
-
+    
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button x:Name="btnAbout" Click="btnAbout_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="关于" />
+                </StackPanel>
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+    
     <Grid>
         <StackPanel VerticalAlignment="Top">
             <StackPanel Style="{StaticResource RowStyle}">
