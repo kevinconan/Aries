@@ -48,7 +48,7 @@ namespace Aries
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            ServerConfigService.Save(serverConfig);
+            ServerConfigService.SaveOrUpdateInMemory(serverConfig);
             this.Close();
         }
 

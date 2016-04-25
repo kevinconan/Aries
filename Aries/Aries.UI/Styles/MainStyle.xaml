@@ -21,11 +21,11 @@
         <Setter Property="Width" Value="370"></Setter>
     </Style>
     <Style TargetType="{x:Type ComboBox}" x:Key="ComboBoxStyle" BasedOn="{StaticResource {x:Type ComboBox}}">
-        <Setter Property="Margin" Value="10,0"></Setter>
-        <Setter Property="Width" Value="200"></Setter>
+        <Setter Property="Margin" Value="2,0"></Setter>
+        <Setter Property="Width" Value="207"></Setter>
     </Style>
     <Style TargetType="{x:Type Button}" x:Key="ButtonStyle" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Margin" Value="10,0"></Setter>
+        <Setter Property="Margin" Value="2,0"></Setter>
         <Setter Property="MinWidth" Value="50"></Setter>
         <Setter Property="FontFamily" Value="Microsoft YaHei UI"></Setter>
     </Style>

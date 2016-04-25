@@ -5,8 +5,8 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Aries.MainWindow"
                       xmlns:localConverters="clr-namespace:Aries.Converters"                  
                       Title="MapleStory登录器"
-                      Height="350"
-                      Width="480" Icon="BlueSnail.ico" ResizeMode="NoResize">
+                      Height="360"
+                      Width="480" Icon="BlueSnail.ico" ResizeMode="NoResize" Closed="MetroWindow_Closed" SizeToContent="Height">
     <Controls:MetroWindow.Resources>
         <localConverters:NullToFalseConverter x:Key="NullToFalseConverter"/>
     </Controls:MetroWindow.Resources>
@@ -22,12 +22,13 @@
     </Controls:MetroWindow.RightWindowCommands>
     
     <Grid>
-        <StackPanel VerticalAlignment="Top">
+        <StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
-                <Label Style="{StaticResource LabelStyle}" Content="服务器配置"/>
-                <ComboBox x:Name="cbServerConfig" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding Values}" DisplayMemberPath="ServerName" SelectedValuePath="ID" SelectionChanged="cbServerConfig_SelectionChanged"/>
+                <Label Style="{StaticResource SubLabelStyle}" Content="选择配置"/>
+                <ComboBox x:Name="cbServerConfig" Style="{StaticResource ComboBoxStyle}" ItemsSource="{Binding}" DisplayMemberPath="ServerName" SelectedValuePath="ID" SelectionChanged="cbServerConfig_SelectionChanged"/>
                 <Button x:Name="btnNew" Content="新增" Style="{StaticResource ButtonStyle}" Click="btnNew_Click" FontSize="12"/>
                 <Button x:Name="btnEdit" Content="编辑" Style="{StaticResource ButtonStyle}" Click="btnEdit_Click" FontSize="12"/>
+                <Button x:Name="btnRemove" Content="删除" Style="{StaticResource ButtonStyle}" FontSize="12" Click="btnRemove_Click"/>
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource SubLabelStyle}" Content="地址"/>
@@ -45,13 +46,16 @@
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource SubLabelStyle}" Content="程序位置"/>
-                <Label Style="{StaticResource ValLgLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ExeLocation}"/>
+                <Label Style="{StaticResource ValLgLabelStyle}" >
+                    <TextBlock Text="{Binding ElementName=cbServerConfig,Path=SelectedItem.ExeLocation}" Width="360" TextWrapping="WrapWithOverflow">
+                    </TextBlock>
+                </Label>
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}" HorizontalAlignment="Center">
                 <Button x:Name="btnStart" Content="启动" Style="{StaticResource ButtonLgStyle}" IsEnabled="{Binding SelectedItem,ElementName=cbServerConfig,Converter={StaticResource NullToFalseConverter}}" Click="btnStart_Click"></Button>
                 <Button x:Name="btnStop" Content="停止" Style="{StaticResource ButtonLgStyle}" Click="btnStop_Click" IsEnabled="False"></Button>
             </StackPanel>
-            <TextBox x:Name="tbLogs" Height="100" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="10" Text="{Binding DataContext, RelativeSource={RelativeSource Self}}"/>
+            <TextBox x:Name="tbLogs" TextWrapping="Wrap" Margin="5" Text="{Binding DataContext, RelativeSource={RelativeSource Self}}" Height="100"/>
         </StackPanel>
     </Grid>
 </Controls:MetroWindow>

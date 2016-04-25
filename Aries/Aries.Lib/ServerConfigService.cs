@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace Aries.Lib
 {
@@ -67,10 +68,10 @@ namespace Aries.Lib
             });
         }
 
-        private static Dictionary<int, ServerConfig> serverConfigs;
+        private static BindingList<ServerConfig> serverConfigs;
         public static int LastId { get; set; }
 
-        public static Dictionary<int, ServerConfig> LoadAll()
+        public static BindingList<ServerConfig> LoadAll()
         {
             if (serverConfigs == null)
             {
@@ -80,7 +81,7 @@ namespace Aries.Lib
 
                 var q = from c in config.configs
                         select c;
-                serverConfigs = q.ToDictionary(sc => sc.ID);
+                serverConfigs = new BindingList<ServerConfig>(q.ToList());
             }
 
             return serverConfigs;
@@ -95,26 +96,32 @@ namespace Aries.Lib
 
             using (var writer = new StreamWriter(FILE))
             {
-                writer.Write(JsonHelper.SerializeObject(new { configs = serverConfigs.Values, lastId = LastId }));
+                writer.Write(JsonHelper.SerializeObject(new { configs = serverConfigs, lastId = LastId }));
             }
 
         }
 
-        public static void Save(ServerConfig serverConfig)
+        public static void SaveOrUpdateInMemory(ServerConfig serverConfig)
         {
             if (serverConfig.ID == 0)
             {
-                var q = from id in serverConfigs.Keys
-                        select id;
+                var q = from sc in serverConfigs
+                        select sc.ID;
                 serverConfig.ID = q.Max() + 1;
-                serverConfigs[serverConfig.ID] = serverConfig;
+                serverConfigs.Add(serverConfig);
             }
             else
             {
-                serverConfigs[serverConfig.ID].UpdateData(serverConfig);
+                var q = from sc in serverConfigs
+                        where sc.ID == serverConfig.ID
+                        select sc;
+                q.First().UpdateData(serverConfig);
             }
+        }
 
-            SaveAll();
+        public static bool RemoveFromMemory(ServerConfig serverConfig)
+        {
+            return serverConfigs.Remove(serverConfig);
         }
 
     }
