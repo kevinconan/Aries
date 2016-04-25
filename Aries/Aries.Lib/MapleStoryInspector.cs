@@ -215,6 +215,7 @@ namespace Aries.Lib
 
         private void HookMapleProcess()
         {
+
             MapleProcess.EnableRaisingEvents = true;
             MapleProcess.Exited += new EventHandler(ProcessExited);
             SendMessage("冒险岛进程Hook完毕...");

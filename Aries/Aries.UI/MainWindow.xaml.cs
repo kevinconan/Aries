@@ -41,7 +41,7 @@ namespace Aries
 
             InitPortForwarding();
 
-
+            //NetworkAdapterInstaller installer = new NetworkAdapterInstaller();
 
         }
 
