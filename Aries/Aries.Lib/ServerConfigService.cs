@@ -25,7 +25,8 @@ namespace Aries.Lib
     {
 
         public static WarpMessage WarpMessage;
-        public static readonly string FILE = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Aries.json";
+        public static readonly string ARIESDIR = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Aries\";
+        public static readonly string FILE = ARIESDIR+ @"Aries.json";
         static string LoadFile()
         {
             try
@@ -53,6 +54,14 @@ namespace Aries.Lib
                     ID=1,
                     ServerName="Kevin's Server",
                     Host="kevinconan.vicp.cc"
+                },
+                new ServerConfig {
+                    ID=2,
+                    ServerName="创意冒险岛",
+                    Host="117.25.135.249",
+                    LoginPort = 8585,
+                    ChannelStartPort = 7675,
+                    ChannelEndPort = 7679
                 }
             },
                 lastId = 0
@@ -80,18 +89,15 @@ namespace Aries.Lib
 
         public static void SaveAll()
         {
-            Console.WriteLine(FILE);
-            var fi = new FileInfo(FILE);
-
-            if (fi.Exists)
-                fi.Attributes = FileAttributes.Normal;
+            if (!Directory.Exists(ARIESDIR))
+            {
+                Directory.CreateDirectory(ARIESDIR);
+            }
 
             using (var writer = new StreamWriter(FILE))
             {
                 writer.Write(JsonHelper.SerializeObject(new { configs = serverConfigs.Values, lastId = LastId }));
             }
-
-            fi.Attributes |= FileAttributes.System | FileAttributes.Hidden;
 
         }
 

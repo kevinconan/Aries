@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="JsonHelper.cs" />
     <Compile Include="MapleStoryInspector.cs" />
+    <Compile Include="NetworkAdapterInstaller.cs" />
     <Compile Include="PortForwardingService.cs" />
     <Compile Include="PortForwardingWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +91,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="Resources\devcon_x64" />
+    <EmbeddedResource Include="Resources\devcon_x86" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aries.Model\Aries.Model.csproj">
@@ -97,6 +100,7 @@
       <Name>Aries.Model</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
