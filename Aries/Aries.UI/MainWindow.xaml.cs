@@ -17,6 +17,7 @@ using MahApps.Metro.Controls;
 using Aries.Lib;
 using System.Threading;
 using Microsoft.Win32;
+using System.ComponentModel;
 
 namespace Aries
 {
@@ -25,7 +26,7 @@ namespace Aries
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        Dictionary<int, ServerConfig> serverConfigs;
+        BindingList<ServerConfig> serverConfigs;
 
         public MapleStoryInspector inspector;
 
@@ -109,8 +110,6 @@ namespace Aries
 
             ServerConfigService.LastId = (int)cbServerConfig.SelectedValue;
 
-            ServerConfigService.SaveAll();
-
         }
         #endregion
 
@@ -186,6 +185,16 @@ namespace Aries
         private void btnAbout_Click(object sender, RoutedEventArgs e)
         {
             new AriesAboutBox().ShowDialog();
+        }
+
+        private void MetroWindow_Closed(object sender, EventArgs e)
+        {
+            ServerConfigService.SaveAll();
+        }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            ServerConfigService.RemoveFromMemory(cbServerConfig.SelectedItem as ServerConfig);
         }
     }
 }
