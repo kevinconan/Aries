@@ -20,21 +20,23 @@ namespace Aries.Lib
 
         #region LifeCycle
 
-        public void Launch()
+        public void Launch(Action<bool> callback)
         {
             SendMessage("正在开启端口映射...");
+            int count = 0;
             foreach (PortForwardingWorker worker in workers.Values)
             {
-                try
-                {
-                    
-                    worker.start();
-                }
-                catch (Exception ex)
-                {
-                    SendErrorMessage(ex.Message);
-                    Stop();
-                }
+                worker.start();
+                count += worker.IsRunning ? 0 : 1;
+            }
+            if (count > 0)
+            {
+                Stop();
+                callback(false);
+            }
+            else
+            {
+                callback(true);
             }
         }
 
@@ -53,6 +55,7 @@ namespace Aries.Lib
                 }
             }
             workers.Clear();
+            SendMessage("端口映射已停止");
         }
 
         #endregion

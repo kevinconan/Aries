@@ -117,7 +117,7 @@ namespace Aries.Lib
                         {
                             if (process.MainWindowTitle == "MapleStory")
                             {
-                                int res = SetWindowText(process.MainWindowHandle, "冒险岛私服登录器 By Kevinconan");
+                                int res = SetWindowText(process.MainWindowHandle, "冒险岛万能登录器 By Kevinconan & Diluka");
                                 if (res == 1)
                                 {
                                     return;
@@ -125,6 +125,7 @@ namespace Aries.Lib
                             }
                         }
 #if DEBUG
+
                         Console.WriteLine("冒险岛窗口句柄----->>>>>"+process.MainWindowHandle);
 
 #endif

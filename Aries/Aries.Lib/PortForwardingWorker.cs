@@ -58,7 +58,7 @@ namespace Aris.Lib
             listener.Stop();
         }
 
-        public async void start()
+        public async void start() 
         {
             IsRunning = true;
             try
@@ -66,9 +66,11 @@ namespace Aris.Lib
                 listener.Start();
                 show?.Invoke($"端口[{localPort}]映射成功");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 show?.Invoke($"端口映射启动失败,请检查端口[{localPort}]是否被占用");
+                IsRunning = false;
+                
             }
             
 

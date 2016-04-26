@@ -42,7 +42,7 @@ namespace Aries
 
             InitPortForwarding();
 
-            //NetworkAdapterInstaller installer = new NetworkAdapterInstaller();
+            
 
         }
 
@@ -65,6 +65,7 @@ namespace Aries
             inspector.OnMapleStoryWindowChange += new OnMapleStoryWindowChange(OnMapleStoryWindowChange);
             inspector.WarpMessage += new WarpMessage(WarpMessage);
             inspector.GetMapleMainPath += new GetMapleMainPath(GetMapleMainPath);
+            NetworkAdapterInstaller.WarpMessage = WarpMessage;
 
         }
 
@@ -73,19 +74,48 @@ namespace Aries
             portService = new PortForwardingService();
             portService.WarpMessage += new WarpMessage(WarpMessage);
         }
-
-        private void StartForwarding()
+        private void LaunchForwarding(bool success)
         {
-            ServerConfig cfg = serverConfigs[Convert.ToInt32(cbServerConfig.SelectedValue)];
-            portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
-            portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
-
-            for (int i = cfg.ChannelStartPort, j = 0; i <= cfg.ChannelEndPort; i++, j++)
+            Dispatcher.Invoke(() =>
             {
-                portService.AddForwarding(7575 + j, cfg.Host, cfg.ChannelStartPort);
-            }
+                if (success)
+                {
+                    ServerConfig cfg = serverConfigs[Convert.ToInt32(cbServerConfig.SelectedValue) - 1];
+                    portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
+                    portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
 
-            portService.Launch();
+                    for (int i = cfg.ChannelStartPort, j = 0; i <= cfg.ChannelEndPort; i++, j++)
+                    {
+                        portService.AddForwarding(7575 + j, cfg.Host, cfg.ChannelStartPort);
+                    }
+
+                    portService.Launch(LauchMaple);
+                }
+                else
+                {
+                    btnStart.IsEnabled = false;
+                }
+
+            });
+           
+        }
+        private void LauchMaple(bool success)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (success)
+                {
+                    inspector.MapleStoryExe = (cbServerConfig.SelectedItem as ServerConfig).ExeLocation;
+                    inspector.Launch();
+                }
+                else
+                {
+                    btnStart.IsEnabled = true;
+                    btnStop.IsEnabled = false;
+                }
+                
+
+            });
         }
 
         private void cbServerConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -104,11 +134,9 @@ namespace Aries
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             btnStart.IsEnabled = false;
-            inspector.MapleStoryExe = (cbServerConfig.SelectedItem as ServerConfig).ExeLocation;
-            inspector.Launch();
-            StartForwarding();
-
             ServerConfigService.LastId = (int)cbServerConfig.SelectedValue;
+            NetworkAdapterInstaller.CheckAndInstallAdapter(LaunchForwarding);
+            
 
         }
         #endregion
@@ -190,11 +218,17 @@ namespace Aries
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
             ServerConfigService.SaveAll();
+            
         }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
             ServerConfigService.RemoveFromMemory(cbServerConfig.SelectedItem as ServerConfig);
+        }
+
+        private void MetroWindow_Closing(object sender, CancelEventArgs e)
+        {
+            NetworkAdapterInstaller.DisableLoopAdapters();
         }
     }
 }
