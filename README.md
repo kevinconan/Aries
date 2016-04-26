@@ -21,3 +21,5 @@ Aries是一个简单的冒险岛万能登录器
 * Kevinconan 即本屌啦，各种乱七八糟的语言都会一点，目前iOS Coder一枚，立志要做一名Mobile Full Stack Developer。 
 
 * Diluka 我最好的朋友，目前“伪”Web Full Stack 一枚
+
+写得比较匆忙，BUG免不了，发现请issues我
