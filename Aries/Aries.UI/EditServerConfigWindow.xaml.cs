@@ -26,6 +26,7 @@ namespace Aries
 
         public EditServerConfigWindow(ServerConfig serverConfig)
         {
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
 
             this.serverConfig = serverConfig?.Clone() as ServerConfig ?? new ServerConfig();
@@ -33,12 +34,19 @@ namespace Aries
         }
         public EditServerConfigWindow() : this(new ServerConfig()) { }
 
+        public bool? ShowDialog(Window window)
+        {
+            this.Owner = window;
+            return ShowDialog();
+        }
+
+
         private void btnSelect_Click(object sender, RoutedEventArgs e)
         {
             // Create OpenFileDialog 
             Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
 
-            openFileDlg.Filter = "冒险岛主程序|MapleStory.exe";
+            openFileDlg.Filter = "应用程序 (*.exe)|*.exe";
 
             if (openFileDlg.ShowDialog(this) ?? false)
             {

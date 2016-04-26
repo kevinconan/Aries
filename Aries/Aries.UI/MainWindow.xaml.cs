@@ -223,7 +223,7 @@ namespace Aries
 
         private void btnNew_Click(object sender, RoutedEventArgs e)
         {
-            new EditServerConfigWindow().ShowDialog();
+            new EditServerConfigWindow().ShowDialog(this);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
@@ -233,7 +233,7 @@ namespace Aries
 
         private void btnAbout_Click(object sender, RoutedEventArgs e)
         {
-            new AriesAboutBox().ShowDialog();
+            new AriesAbout().ShowDialog(this);
         }
 
         private void MetroWindow_Closed(object sender, EventArgs e)
@@ -250,7 +250,6 @@ namespace Aries
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             ServerConfigService.SaveAll();
-            NetworkAdapterInstaller.DisableLoopAdapters();
         }
     }
 }

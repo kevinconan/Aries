@@ -5,9 +5,13 @@
                       xmlns:Model="clr-namespace:Aries.Model;assembly=Aries.Model" x:Class="Aries.EditServerConfigWindow"
                       Title="编辑服务器配置信息"
                       Height="250"
-                      Width="480" ResizeMode="NoResize" Icon="BlueSnail.ico">
+                      Width="480" ResizeMode="NoResize" Icon="BlueSnail.ico" WindowStartupLocation="CenterOwner">
     <Grid>
-        <StackPanel VerticalAlignment="Top">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="209*"/>
+            <ColumnDefinition Width="265*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel VerticalAlignment="Top" Grid.ColumnSpan="2">
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="配置名称"/>
                 <TextBox Style="{StaticResource ControlTextBoxLgStyle}" Text="{Binding ServerName}"/>
