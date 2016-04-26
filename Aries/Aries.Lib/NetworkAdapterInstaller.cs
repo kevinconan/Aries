@@ -28,15 +28,12 @@ namespace Aries.Lib
 
         public static WarpMessage WarpMessage;
 
-        public static void CheckAndInstallAdapter(Action<bool> callback)
+        public async static void CheckAndInstallAdapter(Action<bool> callback)
         {
-            Thread thread = new Thread(new ThreadStart(() =>
-            {
-                callback(ReleaseDevcon() && CheckAndOpenAdapter());
-            }))
-            { IsBackground = true};
+            await Task.Run(() => {
 
-            thread.Start();
+                callback(ReleaseDevcon() && CheckAndOpenAdapter());
+            });
 
         }
 
@@ -179,7 +176,8 @@ namespace Aries.Lib
                 inPar = mo.GetMethodParameters("EnableStatic");
                 inPar["IPAddress"] = new string[] { "221.231.130.70"};//ip地址  
                 inPar["SubnetMask"] = new string[] { "255.255.255.0"}; //子网掩码   
-                mo.InvokeMethod("EnableStatic", inPar, null);//执行  
+                mo.InvokeMethod("EnableStatic", inPar, null);//执行 
+                SendMessage("网卡信息设置成功！"); 
                 return true;
             }
             SendErrorMessage("未找到可设置的虚拟网卡！");

@@ -32,6 +32,8 @@ namespace Aries
 
         public PortForwardingService portService;
 
+        private bool isNetworkAdapterReady = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,7 +44,7 @@ namespace Aries
 
             InitPortForwarding();
 
-            
+            InitNetworkAdapter();
 
         }
 
@@ -65,8 +67,16 @@ namespace Aries
             inspector.OnMapleStoryWindowChange += new OnMapleStoryWindowChange(OnMapleStoryWindowChange);
             inspector.WarpMessage += new WarpMessage(WarpMessage);
             inspector.GetMapleMainPath += new GetMapleMainPath(GetMapleMainPath);
-            NetworkAdapterInstaller.WarpMessage = WarpMessage;
+            
 
+        }
+
+        private void InitNetworkAdapter()
+        {
+            NetworkAdapterInstaller.WarpMessage = WarpMessage;
+            NetworkAdapterInstaller.CheckAndInstallAdapter((bool success)=> {
+                isNetworkAdapterReady = success;
+            });
         }
 
         private void InitPortForwarding()
@@ -80,7 +90,7 @@ namespace Aries
             {
                 if (success)
                 {
-                    ServerConfig cfg = serverConfigs[Convert.ToInt32(cbServerConfig.SelectedValue) - 1];
+                    ServerConfig cfg = serverConfigs[Convert.ToInt32(cbServerConfig.SelectedIndex)];
                     portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
                     portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
 
@@ -135,8 +145,13 @@ namespace Aries
         {
             btnStart.IsEnabled = false;
             ServerConfigService.LastId = (int)cbServerConfig.SelectedValue;
-            NetworkAdapterInstaller.CheckAndInstallAdapter(LaunchForwarding);
-            
+            if (isNetworkAdapterReady)
+            {
+                LaunchForwarding(isNetworkAdapterReady);
+            }else
+            {
+                NetworkAdapterInstaller.CheckAndInstallAdapter(LaunchForwarding);
+            }
 
         }
         #endregion
@@ -192,8 +207,14 @@ namespace Aries
             //fbd.InitialDirectory = readMapleRegInf();
             if (fbd.ShowDialog() == true)
             {
+                Dispatcher.Invoke(() => {
 
+                    ServerConfig currentCfg = (ServerConfig)cbServerConfig.SelectedItem;
+                    currentCfg.ExeLocation = fbd.FileName;
+                    
+                });
                 return fbd.FileName;
+
             }
 
             return null;
@@ -217,7 +238,7 @@ namespace Aries
 
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
-            ServerConfigService.SaveAll();
+            
             
         }
 
@@ -228,6 +249,7 @@ namespace Aries
 
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
+            ServerConfigService.SaveAll();
             NetworkAdapterInstaller.DisableLoopAdapters();
         }
     }

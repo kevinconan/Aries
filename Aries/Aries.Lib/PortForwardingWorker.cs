@@ -43,7 +43,7 @@ namespace Aris.Lib
             this.port = port;
             this.localPort = localPort;
 
-            listener = new TcpListener(IPAddress.Parse("221.231.130.70"), localPort);
+            listener = new TcpListener(IPAddress.Parse("0.0.0.0"), localPort);
         }
 
         void Pipe(NetworkStream a, NetworkStream b)

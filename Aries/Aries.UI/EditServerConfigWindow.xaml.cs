@@ -38,7 +38,7 @@ namespace Aries
             // Create OpenFileDialog 
             Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
 
-            openFileDlg.Filter = "应用程序 (*.exe)|*.exe";
+            openFileDlg.Filter = "冒险岛主程序|MapleStory.exe";
 
             if (openFileDlg.ShowDialog(this) ?? false)
             {
