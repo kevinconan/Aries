@@ -96,7 +96,7 @@ namespace Aries
 
                     for (int i = cfg.ChannelStartPort, j = 0; i <= cfg.ChannelEndPort; i++, j++)
                     {
-                        portService.AddForwarding(7575 + j, cfg.Host, cfg.ChannelStartPort);
+                        portService.AddForwarding(7575 + j, cfg.Host, cfg.ChannelStartPort+j);
                     }
 
                     portService.Launch(LauchMaple);

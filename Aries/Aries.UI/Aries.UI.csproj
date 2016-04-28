@@ -35,7 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Aries.Program</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>BlueSnail.ico</ApplicationIcon>
@@ -113,7 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\NullToFalseConverter.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -155,23 +155,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll">
-      <Link>DllsAsResource\MahApps.Metro.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll">
-      <Link>DllsAsResource\System.Windows.Interactivity.dll</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\Aries.out\Aries.Lib.dll">
-      <Link>DllsAsResource\Aries.Lib.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\Aries.out\Aries.Model.dll">
-      <Link>DllsAsResource\Aries.Model.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll">
-      <Link>DllsAsResource\Newtonsoft.Json.dll</Link>
-    </EmbeddedResource>
     <Resource Include="BlueSnail.ico" />
   </ItemGroup>
   <ItemGroup />

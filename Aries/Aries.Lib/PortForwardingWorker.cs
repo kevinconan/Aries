@@ -43,7 +43,7 @@ namespace Aris.Lib
             this.port = port;
             this.localPort = localPort;
 
-            listener = new TcpListener(IPAddress.Parse("0.0.0.0"), localPort);
+            listener = new TcpListener(IPAddress.Parse("221.231.130.70"), localPort);
         }
 
         void Pipe(NetworkStream a, NetworkStream b)
@@ -64,11 +64,11 @@ namespace Aris.Lib
             try
             {
                 listener.Start();
-                show?.Invoke($"端口[{localPort}]映射成功");
+                show?.Invoke($"端口[221.231.130.70:{localPort}->{host}:{port}]映射成功");
             }
             catch (Exception ex)
             {
-                show?.Invoke($"端口映射启动失败,请检查端口[{localPort}]是否被占用");
+                show?.Invoke($"端口映射启动失败,请检查端口[221.231.130.70:{localPort}]是否被占用");
                 IsRunning = false;
                 
             }
