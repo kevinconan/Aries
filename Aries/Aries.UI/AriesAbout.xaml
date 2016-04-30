@@ -7,7 +7,7 @@
                       Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid>
         <StackPanel HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="274">
-            <Label x:Name="label" Content="Aries冒险岛万能登录器 V1.01" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Margin="0"/>
+            <Label x:Name="label" Content="Aries冒险岛万能登录器 V1.02" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Margin="0"/>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="274">
             <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Margin="117,0"><Hyperlink NavigateUri="https://github.com/kevinconan/Aries" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Github"/></Hyperlink></TextBlock>

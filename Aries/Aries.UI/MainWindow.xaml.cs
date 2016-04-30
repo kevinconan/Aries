@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Aries.Model;
 using MahApps.Metro.Controls;
 using Aries.Lib;
-using System.Threading;
 using Microsoft.Win32;
 using System.ComponentModel;
 
@@ -33,6 +21,8 @@ namespace Aries
         public PortForwardingService portService;
 
         private bool isNetworkAdapterReady = false;
+
+        private bool isRunning = false;
 
         public MainWindow()
         {
@@ -74,9 +64,12 @@ namespace Aries
         private void InitNetworkAdapter()
         {
             NetworkAdapterInstaller.WarpMessage = WarpMessage;
-            NetworkAdapterInstaller.CheckAndInstallAdapter((bool success)=> {
-                isNetworkAdapterReady = success;
+            NetworkAdapterInstaller.ChangeMode(NetForwardMode.Adapter, (bool success) => {
+
             });
+            //NetworkAdapterInstaller.CheckAndInstallAdapter((bool success)=> {
+            //    isNetworkAdapterReady = success;
+            //});
         }
 
         private void InitPortForwarding()
@@ -103,7 +96,7 @@ namespace Aries
                 }
                 else
                 {
-                    btnStart.IsEnabled = false;
+                    SetStartBtn(false);
                 }
 
             });
@@ -128,6 +121,13 @@ namespace Aries
             });
         }
 
+        private void SetStartBtn(bool enable)
+        {
+            btnStart.IsEnabled = enable;
+            CheckGroup.IsEnabled = enable;
+            btnReset.IsEnabled = enable;
+        }
+
         private void cbServerConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -143,7 +143,9 @@ namespace Aries
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            btnStart.IsEnabled = false;
+            
+
+            SetStartBtn(false);
             ServerConfigService.LastId = (int)cbServerConfig.SelectedValue;
             if (isNetworkAdapterReady)
             {
@@ -153,6 +155,27 @@ namespace Aries
                 NetworkAdapterInstaller.CheckAndInstallAdapter(LaunchForwarding);
             }
 
+        }
+
+        private void radio_Adapter_Checked(object sender, RoutedEventArgs e)
+        {
+            SetStartBtn(false);
+
+            NetworkAdapterInstaller.ChangeMode(NetForwardMode.Adapter, (bool success) => {
+                Dispatcher.Invoke(() => {
+                    SetStartBtn(true);
+                });
+            });
+        }
+
+        private void radio_Super_Checked(object sender, RoutedEventArgs e)
+        {
+            SetStartBtn(false);
+            NetworkAdapterInstaller.ChangeMode(NetForwardMode.Route, (bool success) => {
+                Dispatcher.Invoke(() => {
+                    SetStartBtn(true);
+                });
+            });
         }
         #endregion
 
@@ -166,7 +189,7 @@ namespace Aries
         {
             Dispatcher.Invoke(() =>
             {
-                btnStart.IsEnabled = true;
+                SetStartBtn(true);
                 btnStop.IsEnabled = false;
             });
 
@@ -176,7 +199,7 @@ namespace Aries
         {
             Dispatcher.Invoke(() =>
             {
-                btnStart.IsEnabled = true;
+                SetStartBtn(true);
                 btnStop.IsEnabled = false;
             });
         }
@@ -185,7 +208,7 @@ namespace Aries
         {
             Dispatcher.Invoke(() =>
             {
-                btnStart.IsEnabled = false;
+                SetStartBtn(false);
                 btnStop.IsEnabled = true;
             });
         }
@@ -228,7 +251,7 @@ namespace Aries
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            new EditServerConfigWindow(cbServerConfig.SelectedItem as ServerConfig).ShowDialog();
+            new EditServerConfigWindow(cbServerConfig.SelectedItem as ServerConfig).ShowDialog(this);
         }
 
         private void btnAbout_Click(object sender, RoutedEventArgs e)
@@ -250,6 +273,15 @@ namespace Aries
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             ServerConfigService.SaveAll();
+            NetworkAdapterInstaller.CloseNetwork();
         }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            NetworkAdapterInstaller.ResetNetworkSettings();
+            isNetworkAdapterReady = false;
+        }
+
+       
     }
 }
