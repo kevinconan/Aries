@@ -22,8 +22,6 @@ namespace Aries
 
         private bool isNetworkAdapterReady = false;
 
-        private bool isRunning = false;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -57,16 +55,23 @@ namespace Aries
             inspector.OnMapleStoryWindowChange += new OnMapleStoryWindowChange(OnMapleStoryWindowChange);
             inspector.WarpMessage += new WarpMessage(WarpMessage);
             inspector.GetMapleMainPath += new GetMapleMainPath(GetMapleMainPath);
+            inspector.QuickPass = ServerConfigService.QuickPass;
             
-
         }
 
         private void InitNetworkAdapter()
         {
             NetworkAdapterInstaller.WarpMessage = WarpMessage;
-            NetworkAdapterInstaller.ChangeMode(NetForwardMode.Adapter, (bool success) => {
-
-            });
+            if (ServerConfigService.Mode == NetForwardMode.Adapter)
+            {
+                radio_Adapter.IsChecked = true;
+                radio_Super.IsChecked = false;
+            }else
+            {
+                radio_Super.IsChecked = true;
+                radio_Adapter.IsChecked = false;
+            }
+            checkQuickPass.IsChecked = ServerConfigService.QuickPass;
             //NetworkAdapterInstaller.CheckAndInstallAdapter((bool success)=> {
             //    isNetworkAdapterReady = success;
             //});
@@ -84,6 +89,11 @@ namespace Aries
                 if (success)
                 {
                     ServerConfig cfg = serverConfigs[Convert.ToInt32(cbServerConfig.SelectedIndex)];
+                    if (cfg.Host == "localhost" || cfg.Host == "127.0.0.1")
+                    {
+                        LauchMaple(success);
+                        return;
+                    }
                     portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
                     portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
 
@@ -164,6 +174,7 @@ namespace Aries
             NetworkAdapterInstaller.ChangeMode(NetForwardMode.Adapter, (bool success) => {
                 Dispatcher.Invoke(() => {
                     SetStartBtn(true);
+                    ServerConfigService.Mode = NetForwardMode.Adapter;
                 });
             });
         }
@@ -174,6 +185,7 @@ namespace Aries
             NetworkAdapterInstaller.ChangeMode(NetForwardMode.Route, (bool success) => {
                 Dispatcher.Invoke(() => {
                     SetStartBtn(true);
+                    ServerConfigService.Mode = NetForwardMode.Route;
                 });
             });
         }
@@ -282,6 +294,16 @@ namespace Aries
             isNetworkAdapterReady = false;
         }
 
-       
+        private void checkQuickPass_Checked(object sender, RoutedEventArgs e)
+        {
+            ServerConfigService.QuickPass = (bool)checkQuickPass.IsChecked;
+            inspector.QuickPass = ServerConfigService.QuickPass;
+        }
+
+        private void checkQuickPass_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ServerConfigService.QuickPass = (bool)checkQuickPass.IsChecked;
+            inspector.QuickPass = ServerConfigService.QuickPass;
+        }
     }
 }

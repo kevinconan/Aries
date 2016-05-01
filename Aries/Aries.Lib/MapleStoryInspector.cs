@@ -62,6 +62,8 @@ namespace Aries.Lib
 
         public string MapleStoryExe;
 
+        public bool QuickPass = true;
+
         private Process MapleProcess;
 
         #region 冒险岛监视线程
@@ -92,9 +94,13 @@ namespace Aries.Lib
             {
                 
                 MainInspectingThread.Abort();
-                MapleProcess.Kill();
+                MapleProcess = findExistMapleProccess();
+                if (MapleProcess != null)
+                {
+                    MapleProcess.Kill();
+                }
             }
-            catch (Exception)
+            catch 
             {
 
             }
@@ -115,14 +121,10 @@ namespace Aries.Lib
                     {
                         if (process.MainWindowHandle != IntPtr.Zero)
                         {
-                            if (process.MainWindowTitle == "MapleStory")
-                            {
-                                int res = SetWindowText(process.MainWindowHandle, "冒险岛万能登录器 By Kevinconan & Diluka");
-                                if (res == 1)
-                                {
-                                    return;
-                                }
-                            }
+                            
+                            int res = SetWindowText(process.MainWindowHandle, $"冒险岛万能登录器 By Kevinconan & Diluka 当前时间:{DateTime.Now}");
+                                
+
                         }
 #if DEBUG
 
@@ -132,7 +134,7 @@ namespace Aries.Lib
 
                     }
 
-                    Thread.Sleep(100);
+                    Thread.Sleep(1000);
                 }
             }
         }
@@ -185,31 +187,36 @@ namespace Aries.Lib
 
             MapleProcess = Process.Start(MapleStoryExe, "221.231.130.70 8484");
 
-            DateTime start = DateTime.Now;
-            IntPtr handle = IntPtr.Zero;
-
-            while (handle == IntPtr.Zero && DateTime.Now - start <= TimeSpan.FromSeconds(15))
+            if (QuickPass)
             {
-                try
+                DateTime start = DateTime.Now;
+                IntPtr handle = IntPtr.Zero;
+
+                while (handle == IntPtr.Zero && DateTime.Now - start <= TimeSpan.FromSeconds(15))
                 {
-                    // sleep a while to allow the MainWindow to open...
-                    System.Threading.Thread.Sleep(50);
-                    handle = MapleProcess.MainWindowHandle;
-                }
-                catch (Exception) {
-                   
-                    return ;
-                }
-            }
+                    try
+                    {
+                        // sleep a while to allow the MainWindow to open...
+                        System.Threading.Thread.Sleep(50);
+                        handle = MapleProcess.MainWindowHandle;
+                    }
+                    catch (Exception)
+                    {
 
-            if (handle == IntPtr.Zero)
-            {
-                SendErrorMessage("检测冒险岛进程超时...启动失败");
-                OnMapleStoryStartFail?.Invoke();
-            }
+                        return;
+                    }
+                }
 
-            MapleProcess.CloseMainWindow();
-            SendMessage("已跳过引导页....");
+                if (handle == IntPtr.Zero)
+                {
+                    SendErrorMessage("检测冒险岛进程超时...启动失败");
+                    OnMapleStoryStartFail?.Invoke();
+                }
+
+                MapleProcess.CloseMainWindow();
+                SendMessage("已跳过引导页....");
+            }
+            
 
             HookMapleProcess();
         }

@@ -66,7 +66,7 @@ namespace Aris.Lib
                 listener.Start();
                 show?.Invoke($"端口[221.231.130.70:{localPort}->{host}:{port}]映射成功");
             }
-            catch (Exception ex)
+            catch
             {
                 show?.Invoke($"端口映射启动失败,请检查端口[221.231.130.70:{localPort}]是否被占用");
                 IsRunning = false;

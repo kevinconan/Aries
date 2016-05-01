@@ -13,11 +13,13 @@ namespace Aries.Lib
         {
             if (File.Exists(filePath))
             {
-                using (var fileStream = File.Create(filePath))
+                using (var fileStream = File.OpenRead(filePath))
                 {
                     byte[] fileBytes = new byte[fileStream.Length];
                     fileStream.Read(fileBytes, 0, fileBytes.Length);
-                    return md5Str == EncryptUtil.ToMD5(fileBytes);
+                    string fileMd5 = EncryptUtil.ToMD5(fileBytes);
+                    Console.WriteLine(fileMd5);
+                    return md5Str == fileMd5;
                 }
             }
             else

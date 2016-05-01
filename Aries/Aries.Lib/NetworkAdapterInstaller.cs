@@ -23,8 +23,8 @@ namespace Aries.Lib
         public static readonly string X86FILE = "devcon_x86";
         public static readonly string X64FILE = "devcon_x64";
 
-        public static readonly string X86MD5 = "B14F9FFBEAAAB08167E6223CAC933B22";
-        public static readonly string X64MD5 = "79C8395D54FA2E32425A56807240523B";
+        public static readonly string X86MD5 = "7EB69E1F3BC96DE3E79299BA96890C80";
+        public static readonly string X64MD5 = "48E5B0185208D7B0DF5D29EB9A0BA24C";
 
         public static readonly string ARIESDIR = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Aries\";
 
@@ -240,7 +240,7 @@ namespace Aries.Lib
             }
             else
             {
-                SendErrorMessage($"未找到网卡,网卡禁用失败");
+                SendMessage($"未找到可禁用的网卡");
                 return false;
             }
         }
@@ -393,7 +393,7 @@ namespace Aries.Lib
             Directory.CreateDirectory(ARIESDIR);
             string fileName = Environment.Is64BitOperatingSystem ? X64FILE : X86FILE;
             string validMD5 = Environment.Is64BitOperatingSystem ? X64MD5 : X86MD5;
-            if (!FileUtil.FileMD5Validation(validMD5,fileName))
+            if (!FileUtil.FileMD5Validation(validMD5,OUTFILE))
             {
                 
                 byte[] devcon = Environment.Is64BitOperatingSystem ? Resource.devcon_x64 : Resource.devcon_x86;
