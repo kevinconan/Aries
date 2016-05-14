@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Aries.Model;
 using MahApps.Metro.Controls;
 using Aries.Lib;
-using System.Threading;
 using Microsoft.Win32;
 using System.ComponentModel;
 
@@ -67,16 +55,26 @@ namespace Aries
             inspector.OnMapleStoryWindowChange += new OnMapleStoryWindowChange(OnMapleStoryWindowChange);
             inspector.WarpMessage += new WarpMessage(WarpMessage);
             inspector.GetMapleMainPath += new GetMapleMainPath(GetMapleMainPath);
+            inspector.QuickPass = ServerConfigService.QuickPass;
             
-
         }
 
         private void InitNetworkAdapter()
         {
             NetworkAdapterInstaller.WarpMessage = WarpMessage;
-            NetworkAdapterInstaller.CheckAndInstallAdapter((bool success)=> {
-                isNetworkAdapterReady = success;
-            });
+            if (ServerConfigService.Mode == NetForwardMode.Adapter)
+            {
+                radio_Adapter.IsChecked = true;
+                radio_Super.IsChecked = false;
+            }else
+            {
+                radio_Super.IsChecked = true;
+                radio_Adapter.IsChecked = false;
+            }
+            checkQuickPass.IsChecked = ServerConfigService.QuickPass;
+            //NetworkAdapterInstaller.CheckAndInstallAdapter((bool success)=> {
+            //    isNetworkAdapterReady = success;
+            //});
         }
 
         private void InitPortForwarding()
@@ -91,6 +89,11 @@ namespace Aries
                 if (success)
                 {
                     ServerConfig cfg = serverConfigs[Convert.ToInt32(cbServerConfig.SelectedIndex)];
+                    if (cfg.Host == "localhost" || cfg.Host == "127.0.0.1")
+                    {
+                        LauchMaple(success);
+                        return;
+                    }
                     portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
                     portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
 
@@ -103,7 +106,7 @@ namespace Aries
                 }
                 else
                 {
-                    btnStart.IsEnabled = false;
+                    SetStartBtn(false);
                 }
 
             });
@@ -128,6 +131,13 @@ namespace Aries
             });
         }
 
+        private void SetStartBtn(bool enable)
+        {
+            btnStart.IsEnabled = enable;
+            CheckGroup.IsEnabled = enable;
+            btnReset.IsEnabled = enable;
+        }
+
         private void cbServerConfig_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -143,7 +153,9 @@ namespace Aries
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            btnStart.IsEnabled = false;
+            
+
+            SetStartBtn(false);
             ServerConfigService.LastId = (int)cbServerConfig.SelectedValue;
             if (isNetworkAdapterReady)
             {
@@ -153,6 +165,29 @@ namespace Aries
                 NetworkAdapterInstaller.CheckAndInstallAdapter(LaunchForwarding);
             }
 
+        }
+
+        private void radio_Adapter_Checked(object sender, RoutedEventArgs e)
+        {
+            SetStartBtn(false);
+
+            NetworkAdapterInstaller.ChangeMode(NetForwardMode.Adapter, (bool success) => {
+                Dispatcher.Invoke(() => {
+                    SetStartBtn(true);
+                    ServerConfigService.Mode = NetForwardMode.Adapter;
+                });
+            });
+        }
+
+        private void radio_Super_Checked(object sender, RoutedEventArgs e)
+        {
+            SetStartBtn(false);
+            NetworkAdapterInstaller.ChangeMode(NetForwardMode.Route, (bool success) => {
+                Dispatcher.Invoke(() => {
+                    SetStartBtn(true);
+                    ServerConfigService.Mode = NetForwardMode.Route;
+                });
+            });
         }
         #endregion
 
@@ -166,7 +201,7 @@ namespace Aries
         {
             Dispatcher.Invoke(() =>
             {
-                btnStart.IsEnabled = true;
+                SetStartBtn(true);
                 btnStop.IsEnabled = false;
             });
 
@@ -176,7 +211,7 @@ namespace Aries
         {
             Dispatcher.Invoke(() =>
             {
-                btnStart.IsEnabled = true;
+                SetStartBtn(true);
                 btnStop.IsEnabled = false;
             });
         }
@@ -185,7 +220,7 @@ namespace Aries
         {
             Dispatcher.Invoke(() =>
             {
-                btnStart.IsEnabled = false;
+                SetStartBtn(false);
                 btnStop.IsEnabled = true;
             });
         }
@@ -228,7 +263,7 @@ namespace Aries
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
-            new EditServerConfigWindow(cbServerConfig.SelectedItem as ServerConfig).ShowDialog();
+            new EditServerConfigWindow(cbServerConfig.SelectedItem as ServerConfig).ShowDialog(this);
         }
 
         private void btnAbout_Click(object sender, RoutedEventArgs e)
@@ -250,6 +285,25 @@ namespace Aries
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             ServerConfigService.SaveAll();
+            NetworkAdapterInstaller.CloseNetwork();
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            NetworkAdapterInstaller.ResetNetworkSettings();
+            isNetworkAdapterReady = false;
+        }
+
+        private void checkQuickPass_Checked(object sender, RoutedEventArgs e)
+        {
+            ServerConfigService.QuickPass = (bool)checkQuickPass.IsChecked;
+            inspector.QuickPass = ServerConfigService.QuickPass;
+        }
+
+        private void checkQuickPass_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ServerConfigService.QuickPass = (bool)checkQuickPass.IsChecked;
+            inspector.QuickPass = ServerConfigService.QuickPass;
         }
     }
 }

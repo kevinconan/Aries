@@ -60,24 +60,30 @@ namespace Aries.Lib
                 configs = new ServerConfig[] {
                 new ServerConfig {
                     ID=1,
-                    ServerName="Kevin's Server",
-                    Host="kevinconan.vicp.cc"
+                    ServerName="单机登录",
+                    Host="127.0.0.1"
                 }
             },
-                lastId = 0
+                lastId = 0,
+                mode = 0,
+                quickPass = true
             });
         }
 
         private static BindingList<ServerConfig> serverConfigs;
         public static int LastId { get; set; }
+        public static NetForwardMode Mode { get; set; }
+        public static bool QuickPass { get; set; }
 
         public static BindingList<ServerConfig> LoadAll()
         {
             if (serverConfigs == null)
             {
-                var config = new { lastId = 0, configs = new ServerConfig[0] };
+                var config = new { mode = 0,lastId = 0, quickPass = true, configs = new ServerConfig[0] };
                 config = JsonHelper.DeserializeAnonymousType(LoadFile(), config);
                 LastId = config.lastId;
+                Mode = (NetForwardMode)config.mode;
+                QuickPass = config.quickPass;
 
                 var q = from c in config.configs
                         select c;
@@ -96,7 +102,7 @@ namespace Aries.Lib
 
             using (var writer = new StreamWriter(FILE))
             {
-                writer.Write(JsonHelper.SerializeObject(new { configs = serverConfigs, lastId = LastId }));
+                writer.Write(JsonHelper.SerializeObject(new { configs = serverConfigs, lastId = LastId,mode = Mode, quickPass=QuickPass }));
             }
 
         }

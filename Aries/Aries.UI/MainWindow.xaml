@@ -9,17 +9,30 @@
     <Controls:MetroWindow.Resources>
         <localConverters:NullToFalseConverter x:Key="NullToFalseConverter"/>
     </Controls:MetroWindow.Resources>
-    
+
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
+            <Button x:Name="btnReset" Click="btnReset_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" IsEnabled="{Binding isRunning}" Text="重置网络" >
+                        <TextBlock.ToolTip>
+                            <StackPanel>
+                                <Label Content="重置网络设置，专治各种网络失败，将会删除所有重定向配置以及虚拟网卡"/>
+                            </StackPanel>
+                        </TextBlock.ToolTip>
+
+                    </TextBlock>
+                </StackPanel>
+            </Button>
             <Button x:Name="btnAbout" Click="btnAbout_Click">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Margin="4 0 0 0" VerticalAlignment="Center" Text="关于" />
                 </StackPanel>
             </Button>
+            
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
-    
+
     <Grid>
         <StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
@@ -53,6 +66,37 @@
             <StackPanel Style="{StaticResource RowStyle}" HorizontalAlignment="Center">
                 <Button x:Name="btnStart" Content="启动" Style="{StaticResource ButtonLgStyle}" IsEnabled="{Binding SelectedItem,ElementName=cbServerConfig,Converter={StaticResource NullToFalseConverter}}" Click="btnStart_Click"></Button>
                 <Button x:Name="btnStop" Content="停止" Style="{StaticResource ButtonLgStyle}" Click="btnStop_Click" IsEnabled="False"></Button>
+                <StackPanel Name="CheckGroup">
+                    <RadioButton x:Name="radio_Adapter" Content="网卡模式" Margin="5" IsChecked="True" Checked="radio_Adapter_Checked">
+                        <RadioButton.ToolTip>
+                            <StackPanel>
+                                <Label Content="此模式将会自动创建虚拟网卡，兼容性较好">
+                                </Label>
+                            </StackPanel>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+                    <RadioButton x:Name="radio_Super" Content="路由模式" Margin="5" Checked="radio_Super_Checked">
+                        <RadioButton.ToolTip>
+                            <StackPanel>
+                                <Label Content="此模式将会修改本地回环配置，不会自动创建虚拟网卡，稳定性较好">
+                                </Label>
+                            </StackPanel>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+
+                </StackPanel>
+                <StackPanel>
+                    <CheckBox x:Name="checkQuickPass" Content="快速启动" Margin="5" Checked="checkQuickPass_Checked" Unchecked="checkQuickPass_Unchecked" >
+                        <CheckBox.ToolTip>
+                            <StackPanel>
+                                <Label Content="快速启动模式可跳过引导页，若出现冒险岛无法启动的情况，请禁用此项！">
+                                </Label>
+                            </StackPanel>
+                        </CheckBox.ToolTip>
+                    </CheckBox>
+                </StackPanel>
+
+
             </StackPanel>
             <TextBox x:Name="tbLogs" TextWrapping="Wrap" Margin="5" Text="{Binding DataContext, RelativeSource={RelativeSource Self}}" Height="100"/>
         </StackPanel>

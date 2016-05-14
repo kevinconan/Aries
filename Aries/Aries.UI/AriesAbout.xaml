@@ -7,14 +7,14 @@
                       Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid>
         <StackPanel HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="274">
-            <Label x:Name="label" Content="Aries冒险岛万能登录器 V1.0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Margin="0"/>
+            <Label x:Name="nameVersion" Content="Aries冒险岛万能登录器" HorizontalAlignment="Center" VerticalAlignment="Top" Height="25" Margin="0"/>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="274">
             <TextBlock x:Name="textBlock_Copy1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Margin="117,0"><Hyperlink NavigateUri="https://github.com/kevinconan/Aries" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Github"/></Hyperlink></TextBlock>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" Width="274" RenderTransformOrigin="-0.123,-0.613"/>
         <StackPanel HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="274">
-            <Label x:Name="label1" Content="Kevinconan &amp; Diluka © 2016" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label x:Name="labelCopyright" Content="Kevinconan &amp; Diluka © 2016" HorizontalAlignment="Center" VerticalAlignment="Top"/>
         </StackPanel>
         <StackPanel Margin="10,70,10,77">
             <Label x:Name="label2" Content="Lisense MIT" HorizontalAlignment="Center"/>
