@@ -60,8 +60,8 @@ namespace Aries.Lib
                 configs = new ServerConfig[] {
                 new ServerConfig {
                     ID=1,
-                    ServerName="娜娜BMS",
-                    Host="219.159.104.83"
+                    ServerName="单机登录",
+                    Host="127.0.0.1"
                 }
             },
                 lastId = 0,
