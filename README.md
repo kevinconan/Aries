@@ -16,6 +16,8 @@ Aries是一个简单的冒险岛万能登录器
 * 记忆多个服务器地址
 * 跳过冒险岛广告
 
+![截图v1.1.2](https://raw.githubusercontent.com/kevinconan/Aries/master/Aries/Screenshot/screenshot-v1.1.2.png)
+
 ##更新内容 V1.1.2
 
 * 可自由选择两种IP重定向模式
