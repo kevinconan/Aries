@@ -47,13 +47,15 @@
                 <Label Style="{StaticResource ValLgLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.Host}"/>
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
-                <Label Style="{StaticResource SubLabelStyle}" Content="登陆端口"/>
+                <Label Style="{StaticResource SubLabelStyle2}" Content="登陆端口" Margin="10,0,0,0"/>
                 <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.LoginPort}"/>
-                <Label Style="{StaticResource SubLabelStyle}" Content="商城端口"/>
+                <Label Style="{StaticResource SubLabelStyle2}" Content="商城端口"/>
                 <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ShopPort}"/>
-                <Label Style="{StaticResource SubLabelStyle}" Content="频道端口"/>
+                <Label Style="{StaticResource SubLabelStyle2}" Content="拍卖端口"/>
+                <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.AhPort}"/>
+                <Label Style="{StaticResource SubLabelStyle2}" Content="频道端口"/>
                 <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ChannelStartPort}"/>
-                <Label Style="{StaticResource SubLabelStyle}" Content="~" HorizontalContentAlignment="Center" MinWidth="10"/>
+                <Label Style="{StaticResource SubLabelStyle2}" Content="~" HorizontalContentAlignment="Center" Padding="0,5" MinWidth="10" Width="10"/>
                 <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ChannelEndPort}"/>
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">

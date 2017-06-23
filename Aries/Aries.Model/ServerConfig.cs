@@ -14,6 +14,7 @@ namespace Aries.Model
         private string host;
         private int loginPort = 8484;
         private int shopPort = 8600;
+        private int ahPort = 8700;
         private int channelStartPort = 7575;
         private int channelEndPort = 7580;
         private string exeLocation = "MapleStory.exe";
@@ -46,6 +47,10 @@ namespace Aries.Model
 
         [Required]
         [Range(1, 65535, ErrorMessage = "端口号范围必须介于1到65535之间")]
+        public int AhPort { get { return ahPort; } set { ahPort = value; RaisePropertyChanged("AhPort"); } }
+
+        [Required]
+        [Range(1, 65535, ErrorMessage = "端口号范围必须介于1到65535之间")]
         public int ChannelStartPort { get { return channelStartPort; } set { channelStartPort = value; RaisePropertyChanged("ChannelStartPort"); } }
 
         [Required]
@@ -65,6 +70,7 @@ namespace Aries.Model
                 Host = Host,
                 LoginPort = LoginPort,
                 ShopPort = ShopPort,
+                AhPort = AhPort,
                 ChannelStartPort = ChannelStartPort,
                 ChannelEndPort = ChannelEndPort,
                 ExeLocation = ExeLocation,

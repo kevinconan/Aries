@@ -4,7 +4,7 @@
                       xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:Model="clr-namespace:Aries.Model;assembly=Aries.Model" x:Class="Aries.EditServerConfigWindow"
                       Title="编辑服务器配置信息"
-                      Height="250"
+                      Height="280"
                       Width="480" ResizeMode="NoResize" Icon="BlueSnail.ico" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -23,8 +23,12 @@
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="登陆端口"/>
                 <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding LoginPort}"/>
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="商城端口"/>
                 <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding ShopPort}"/>
+                <Label Style="{StaticResource LabelStyle}" Content="拍卖端口"/>
+                <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding AhPort}"/>
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="频道开始端口"/>
