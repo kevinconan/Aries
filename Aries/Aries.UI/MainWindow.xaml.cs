@@ -97,7 +97,7 @@ namespace Aries
                     portService.AddForwarding(8484, cfg.Host, cfg.LoginPort);
                     portService.AddForwarding(8600, cfg.Host, cfg.ShopPort);
                     portService.AddForwarding(8700, cfg.Host, cfg.AhPort);
-
+                    portService.AddForwarding(8283, cfg.Host, cfg.ChatPort);
                     for (int i = cfg.ChannelStartPort, j = 0; i <= cfg.ChannelEndPort; i++, j++)
                     {
                         portService.AddForwarding(7575 + j, cfg.Host, cfg.ChannelStartPort+j);

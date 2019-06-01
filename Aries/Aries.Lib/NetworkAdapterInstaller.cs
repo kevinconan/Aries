@@ -367,7 +367,7 @@ namespace Aries.Lib
             await Task.Run(()=> {
                 SendMessage("正在重置网络..,");
                 SendMessage("正在清空重定向设置...");
-                int[] ports = new int[12] { 8484, 8600, 7575, 7576, 7577, 7578, 7579, 7580, 7581, 7582, 7583, 7584, };
+                int[] ports = new int[13] { 8484, 8600 , 8700, 7575, 7576, 7577, 7578, 7579, 7580, 7581, 7582, 7583, 7584, };
                 StringBuilder sb = new StringBuilder();
                 foreach (int port in ports)
                 {

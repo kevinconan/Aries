@@ -23,6 +23,8 @@
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="登陆端口"/>
                 <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding LoginPort}"/>
+                <Label Style="{StaticResource LabelStyle}" Content="聊天端口"/>
+                <TextBox Style="{StaticResource ControlTextBoxStyle}" Text="{Binding ChatPort}"/>
             </StackPanel>
             <StackPanel Style="{StaticResource RowStyle}">
                 <Label Style="{StaticResource LabelStyle}" Content="商城端口"/>
@@ -41,7 +43,7 @@
                 <TextBox x:Name="txtExeLocation" Style="{StaticResource ControlTextBoxLgStyle}" Width="249" Text="{Binding ExeLocation}"/>
                 <Button x:Name="btnSelect" Style="{StaticResource ButtonStyle}" Content="选择" Click="btnSelect_Click"/>
             </StackPanel>
-            <StackPanel Style="{StaticResource RowStyle}" HorizontalAlignment="Center">
+            <StackPanel Style="{StaticResource RowStyle}" HorizontalAlignment="Center" Margin="0,0,0,5">
                 <Button x:Name="btnSave" Content="保存" Style="{StaticResource ButtonStyle}" Click="btnSave_Click"/>
                 <Button x:Name="btnCancel" Content="取消" Style="{StaticResource ButtonStyle}" Click="btnCancel_Click"/>
             </StackPanel>

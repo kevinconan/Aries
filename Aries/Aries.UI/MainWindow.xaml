@@ -53,6 +53,12 @@
                 <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ShopPort}"/>
                 <Label Style="{StaticResource SubLabelStyle2}" Content="拍卖端口"/>
                 <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.AhPort}"/>
+                
+            </StackPanel>
+            <StackPanel Style="{StaticResource RowStyle}">
+
+                <Label Style="{StaticResource SubLabelStyle2}" Content="聊天端口" Margin="10,0,0,0"/>
+                <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ChatPort}"/>
                 <Label Style="{StaticResource SubLabelStyle2}" Content="频道端口"/>
                 <Label Style="{StaticResource ValLabelStyle}" Content="{Binding ElementName=cbServerConfig,Path=SelectedItem.ChannelStartPort}"/>
                 <Label Style="{StaticResource SubLabelStyle2}" Content="~" HorizontalContentAlignment="Center" Padding="0,5" MinWidth="10" Width="10"/>
