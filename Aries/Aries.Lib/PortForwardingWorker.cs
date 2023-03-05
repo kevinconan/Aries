@@ -1,11 +1,7 @@
-﻿using Aries.Lib;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,11 +25,11 @@ namespace Aris.Lib
     {
         public bool IsRunning { get; set; } = false;
 
+        public CancellationTokenSource cancellationTokenSource { get; set; }
+
         string host;
         int port;
         int localPort;
-        Dictionary<NetworkStream, bool> first = new Dictionary<NetworkStream, bool>();
-        TcpListener listener;
 
         public Action<string> show;
 
@@ -43,76 +39,98 @@ namespace Aris.Lib
             this.port = port;
             this.localPort = localPort;
 
-            listener = new TcpListener(IPAddress.Parse("0.0.0.0"), localPort);
         }
 
-        void Pipe(NetworkStream a, NetworkStream b)
+        public static async Task PortForwardWithIOCP(IPAddress localIP, int localPort, string remoteHostName, int remotePort, Action onStart, Action onStop, Action<Exception> onError, CancellationToken cancellationToken)
         {
-            a.CopyToAsync(b);
-            b.CopyToAsync(a);
+            IPHostEntry remoteHost = await Dns.GetHostEntryAsync(remoteHostName);
+            if (remoteHost.AddressList.Length == 0)
+            {
+                onError?.Invoke(new ArgumentException($"Cannot resolve remote host: {remoteHostName}"));
+                return ;
+            }
+
+            TcpListener listener = new TcpListener(localIP, localPort);
+            listener.Start();
+            onStart?.Invoke();
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    TcpClient client = await listener.AcceptTcpClientAsync();
+                    ThreadPool.QueueUserWorkItem(async delegate {
+                        using (client)
+                        {
+                            TcpClient server = new TcpClient();
+                            await server.ConnectAsync(remoteHost.AddressList[0], remotePort);
+                            using (server)
+                            using (NetworkStream clientStream = client.GetStream())
+                            using (NetworkStream serverStream = server.GetStream())
+                            {
+                                var clientToServer = Task.Run(async () => {
+                                    byte[] buffer = new byte[1024];
+                                    try
+                                    {
+                                        while (!cancellationToken.IsCancellationRequested)
+                                        {
+                                            int bytesRead = await clientStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                                            await serverStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        onError?.Invoke(ex);
+                                    }
+                                }, cancellationToken);
+
+                                var serverToClient = Task.Run(async () => {
+                                    byte[] buffer = new byte[1024];
+                                    try
+                                    {
+                                        while (!cancellationToken.IsCancellationRequested)
+                                        {
+                                            int bytesRead = await serverStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                                            await clientStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        onError?.Invoke(ex);
+                                    }
+                                }, cancellationToken);
+
+                                await Task.WhenAny(clientToServer, serverToClient);
+                            }
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    onError?.Invoke(ex);
+                }
+            }
+            onStop?.Invoke();
         }
 
         public void stop()
         {
             IsRunning = false;
-            listener.Stop();
+            cancellationTokenSource.Cancel();
         }
 
-        public async void start() 
+        public async void start()
         {
             IsRunning = true;
-            try
-            {
-                listener.Start();
-                show?.Invoke($"端口[221.231.130.70:{localPort}->{host}:{port}]映射成功");
-            }
-            catch
-            {
-                show?.Invoke($"端口映射启动失败,请检查端口[221.231.130.70:{localPort}]是否被占用");
-                IsRunning = false;
-                
-            }
-            
 
-            while (IsRunning)
-            {
-                try
-                {
-                    var outgoing = await listener.AcceptTcpClientAsync();
 
-                    var remote = new TcpClient(host, port);
+            Action onStart = () => { show?.Invoke($"端口[221.231.130.70:{localPort}->{host}:{port}]映射成功"); };
+            Action onStop = () => Console.WriteLine("Port forwarding stopped.");
+            Action<Exception> onError = ex => show?.Invoke($"端口映射启动失败,原因:{ex.Message}");
 
-                    show?.Invoke($"端口[{localPort}]已连接");
+            cancellationTokenSource = new CancellationTokenSource();
+            var task = PortForwardWithIOCP(IPAddress.Parse("0.0.0.0"), localPort, host, port, onStart, onStop, onError, cancellationTokenSource.Token);
 
-                    var localStream = new NetworkStream(outgoing.Client);
-                    var remoteStream = new NetworkStream(remote.Client);
-                    first[localStream] = true;
 
-                    Pipe(localStream, remoteStream);
-                    //CopyTo("client：",localStream, remoteStream);
-                    //CopyTo("server：",remoteStream, localStream);
-
-                    new Thread(() =>
-                    {
-                        while (true)
-                        {
-
-                            if (!remote.Connected() || !outgoing.Connected())
-                            {
-                                localStream.Close();
-                                remoteStream.Close();
-                                remote.Close();
-                                outgoing.Close();
-                                show?.Invoke($"端口[{localPort}]已断开");
-                                return;
-                            }
-                            Thread.Sleep(1000);
-                        }
-                    })
-                    { IsBackground = true }.Start();
-                }
-                catch { }
-            }
         }
 
     }

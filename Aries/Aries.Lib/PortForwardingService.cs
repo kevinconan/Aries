@@ -28,17 +28,18 @@ namespace Aries.Lib
                 foreach (PortForwardingWorker worker in workers.Values)
                 {
                     worker.start();
-                    count += worker.IsRunning ? 0 : 1;
+                    
                 }
-                if (count > 0)
-                {
-                    Stop();
-                    callback(false);
-                }
-                else
-                {
-                    callback(true);
-                }
+                callback(true);
+                //if (count > 0)
+                //{
+                //    Stop();
+                //    callback(false);
+                //}
+                //else
+                //{
+                //    callback(true);
+                //}
             });
            
         }
