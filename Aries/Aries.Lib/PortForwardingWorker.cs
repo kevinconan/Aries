@@ -47,7 +47,7 @@ namespace Aris.Lib
             if (remoteHost.AddressList.Length == 0)
             {
                 onError?.Invoke(new ArgumentException($"Cannot resolve remote host: {remoteHostName}"));
-                return ;
+                return;
             }
 
             TcpListener listener = new TcpListener(localIP, localPort);
@@ -62,7 +62,7 @@ namespace Aris.Lib
                         using (client)
                         {
                             TcpClient server = new TcpClient();
-                            await server.ConnectAsync(remoteHost.AddressList[0], remotePort);
+                            await ConnectWithRetryAsync(server, remoteHost.AddressList[0], remotePort, cancellationToken);
                             using (server)
                             using (NetworkStream clientStream = client.GetStream())
                             using (NetworkStream serverStream = server.GetStream())
@@ -74,12 +74,23 @@ namespace Aris.Lib
                                         while (!cancellationToken.IsCancellationRequested)
                                         {
                                             int bytesRead = await clientStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                                            if (bytesRead == 0)
+                                            {
+                                                break;
+                                            }
+                                            if (serverStream == null)
+                                            {
+                                                break;
+                                            }
                                             await serverStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
                                         }
                                     }
                                     catch (Exception ex)
                                     {
-                                        onError?.Invoke(ex);
+                                        if (!(ex is ObjectDisposedException) && !(ex is InvalidOperationException))
+                                        {
+                                            onError?.Invoke(ex);
+                                        }
                                     }
                                 }, cancellationToken);
 
@@ -90,12 +101,26 @@ namespace Aris.Lib
                                         while (!cancellationToken.IsCancellationRequested)
                                         {
                                             int bytesRead = await serverStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                                            if (bytesRead == 0)
+                                            {
+                                                break;
+                                            }
+                                            if (clientStream == null)
+                                            {
+                                                break;
+                                            }
                                             await clientStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
                                         }
                                     }
                                     catch (Exception ex)
                                     {
-                                        onError?.Invoke(ex);
+                                        if (!(ex is ObjectDisposedException) && !(ex is InvalidOperationException))
+                                        {
+                                            onError?.Invoke(ex);
+                                        }
+                                        await ConnectWithRetryAsync(server, remoteHost.AddressList[0], remotePort, cancellationToken);
+                                        clientStream.Flush(); // 清空缓冲区
+                                        serverStream.Flush(); // 清空缓冲区
                                     }
                                 }, cancellationToken);
 
@@ -106,10 +131,33 @@ namespace Aris.Lib
                 }
                 catch (Exception ex)
                 {
-                    onError?.Invoke(ex);
+                    if (!(ex is ObjectDisposedException) && !(ex is InvalidOperationException))
+                    {
+                        onError?.Invoke(ex);
+                    }
                 }
             }
             onStop?.Invoke();
+        }
+
+        private static async Task ConnectWithRetryAsync(TcpClient client, IPAddress address, int port, CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                try
+                {
+                    await client.ConnectAsync(address, port).ConfigureAwait(false);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        throw;
+                    }
+                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                }
+            }
         }
 
         public void stop()
