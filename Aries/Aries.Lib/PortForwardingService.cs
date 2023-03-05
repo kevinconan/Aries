@@ -20,15 +20,18 @@ namespace Aries.Lib
 
         #region LifeCycle
 
-        public async void  Launch(Action<bool> callback)
+        public async void Launch(Action<bool> callback)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 SendMessage("正在开启端口映射...");
                 int count = 0;
                 foreach (PortForwardingWorker worker in workers.Values)
                 {
-                    worker.start();
-                    
+                    if (!worker.IsRunning)
+                    {
+                        worker.Start();
+                    }
                 }
                 callback(true);
                 //if (count > 0)
@@ -41,7 +44,7 @@ namespace Aries.Lib
                 //    callback(true);
                 //}
             });
-           
+
         }
 
         public void Stop()
@@ -51,11 +54,11 @@ namespace Aries.Lib
             {
                 try
                 {
-                    worker.stop();
+                    worker.Stop();
                 }
-                catch 
+                catch (Exception ex)
                 {
-                    
+                    SendErrorMessage($"停止端口映射出错：{ex}");
                 }
             }
             workers.Clear();
@@ -68,24 +71,11 @@ namespace Aries.Lib
 
         public void AddForwarding(int localPort, string host, int port)
         {
-            PortForwardingWorker worker;
-
-            worker = new PortForwardingWorker(localPort, host, port);
-            worker.show += SendMessage;
-
-            if (workers.ContainsKey(localPort))
+            var worker = workers.ContainsKey(localPort) ? workers[localPort] : null;
+            if (worker == null)
             {
-                try
-                {
-                    workers[localPort].stop();
-                    workers[localPort] = worker;
-                }
-                catch (Exception)
-                {
-                }
-            }
-            else
-            {
+                worker = new PortForwardingWorker(localPort, host, port);
+                worker.show += SendMessage;
                 workers.Add(localPort, worker);
             }
         }

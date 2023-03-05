@@ -202,6 +202,7 @@ namespace Aries
         {
             Dispatcher.Invoke(() =>
             {
+                portService.Stop(); // TODO 理论上可以不用关闭，但是不关闭之前客户端的连接没有与服务器中断，关闭之前客户端的连接
                 SetStartBtn(true);
                 btnStop.IsEnabled = false;
             });

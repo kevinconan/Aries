@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -25,122 +24,64 @@ namespace Aris.Lib
     {
         public bool IsRunning { get; set; } = false;
 
-        public CancellationTokenSource cancellationTokenSource { get; set; }
+        private CancellationTokenSource CancellationTokenSource { get; set; }
+        private TcpListener listener;
 
-        string host;
-        int port;
-        int localPort;
+        public string RemoteHost { get; private set; }
+        public int RemotePort { get; private set; }
+        public int LocalPort { get; private set; }
 
         public Action<string> show;
 
         public PortForwardingWorker(int localPort, string host, int port)
         {
-            this.host = host;
-            this.port = port;
-            this.localPort = localPort;
-
+            RemoteHost = host;
+            RemotePort = port;
+            LocalPort = localPort;
         }
 
-        public static async Task PortForwardWithIOCP(IPAddress localIP, int localPort, string remoteHostName, int remotePort, Action onStart, Action onStop, Action<Exception> onError, CancellationToken cancellationToken)
+        private async Task PortForwardWithIOCP(IPAddress localIP)
         {
-            IPHostEntry remoteHost = await Dns.GetHostEntryAsync(remoteHostName);
+            var cancellationToken = CancellationTokenSource.Token;
+            IPHostEntry remoteHost = await Dns.GetHostEntryAsync(RemoteHost);
             if (remoteHost.AddressList.Length == 0)
             {
-                onError?.Invoke(new ArgumentException($"Cannot resolve remote host: {remoteHostName}"));
+                OnError(new ArgumentException($"Cannot resolve remote host: {RemoteHost}"));
                 return;
             }
 
-            TcpListener listener = new TcpListener(localIP, localPort);
+            listener = new TcpListener(localIP, LocalPort);
             listener.Start();
-            onStart?.Invoke();
+            OnStart();
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
                     TcpClient client = await listener.AcceptTcpClientAsync();
-                    ThreadPool.QueueUserWorkItem(async delegate {
+                    ThreadPool.QueueUserWorkItem(async delegate
+                    {
                         using (client)
                         {
                             TcpClient server = new TcpClient();
-                            await ConnectWithRetryAsync(server, remoteHost.AddressList[0], remotePort, cancellationToken);
+                            await ConnectWithRetryAsync(server, remoteHost.AddressList[0], RemotePort, cancellationToken);
+
                             using (server)
                             using (NetworkStream clientStream = client.GetStream())
                             using (NetworkStream serverStream = server.GetStream())
                             {
-                                var clientToServer = Task.Run(async () => {
-                                    byte[] buffer = new byte[1024];
-                                    try
-                                    {
-                                        while (!cancellationToken.IsCancellationRequested)
-                                        {
-                                            int bytesRead = await clientStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                                            if (bytesRead == 0)
-                                            {
-                                                break;
-                                            }
-                                            if (serverStream == null)
-                                            {
-                                                break;
-                                            }
-                                            await serverStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        if (!(ex is ObjectDisposedException) && !(ex is InvalidOperationException))
-                                        {
-                                            onError?.Invoke(ex);
-                                        }
-                                    }
-                                }, cancellationToken);
-
-                                var serverToClient = Task.Run(async () => {
-                                    byte[] buffer = new byte[1024];
-                                    try
-                                    {
-                                        while (!cancellationToken.IsCancellationRequested)
-                                        {
-                                            int bytesRead = await serverStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                                            if (bytesRead == 0)
-                                            {
-                                                break;
-                                            }
-                                            if (clientStream == null)
-                                            {
-                                                break;
-                                            }
-                                            await clientStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        if (!(ex is ObjectDisposedException) && !(ex is InvalidOperationException))
-                                        {
-                                            onError?.Invoke(ex);
-                                        }
-                                        await ConnectWithRetryAsync(server, remoteHost.AddressList[0], remotePort, cancellationToken);
-                                        clientStream.Flush(); // 清空缓冲区
-                                        serverStream.Flush(); // 清空缓冲区
-                                    }
-                                }, cancellationToken);
-
-                                await Task.WhenAny(clientToServer, serverToClient);
+                                await Task.WhenAny(
+                                    PortForward(client, clientStream, serverStream, localIP, LocalPort, cancellationToken),
+                                    PortForward(server, serverStream, clientStream, remoteHost.AddressList[0], RemotePort, cancellationToken));
                             }
                         }
                     });
                 }
-                catch (Exception ex)
-                {
-                    if (!(ex is ObjectDisposedException) && !(ex is InvalidOperationException))
-                    {
-                        onError?.Invoke(ex);
-                    }
-                }
+                catch (Exception ex) { OnError(ex); }
             }
-            onStop?.Invoke();
+            OnStop();
         }
 
-        private static async Task ConnectWithRetryAsync(TcpClient client, IPAddress address, int port, CancellationToken cancellationToken)
+        private async Task ConnectWithRetryAsync(TcpClient client, IPAddress address, int port, CancellationToken cancellationToken)
         {
             while (true)
             {
@@ -149,7 +90,7 @@ namespace Aris.Lib
                     await client.ConnectAsync(address, port).ConfigureAwait(false);
                     return;
                 }
-                catch (Exception ex)
+                catch
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -160,26 +101,64 @@ namespace Aris.Lib
             }
         }
 
-        public void stop()
+        private async Task PortForward(TcpClient client, NetworkStream from, NetworkStream to, IPAddress ip, int port, CancellationToken token)
         {
-            IsRunning = false;
-            cancellationTokenSource.Cancel();
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    await from.CopyToAsync(to, 1024, token);
+                }
+                catch (Exception ex)
+                {
+                    OnError(ex);
+
+                    await ConnectWithRetryAsync(client, ip, port, token);
+                    from.Flush(); // 清空缓冲区
+                    to.Flush(); // 清空缓冲区
+                }
+            }
         }
 
-        public async void start()
+        public void Stop()
+        {
+            try
+            {
+                IsRunning = false;
+                CancellationTokenSource?.Cancel();
+                listener?.Stop(); // TODO 不关无法开启新的，关又一定会抛异常，关的方式不对，需要解决
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"停止端口映射时出错：{ex}");
+            }
+
+        }
+
+        public async void Start()
         {
             IsRunning = true;
-
-
-            Action onStart = () => { show?.Invoke($"端口[221.231.130.70:{localPort}->{host}:{port}]映射成功"); };
-            Action onStop = () => Console.WriteLine("Port forwarding stopped.");
-            Action<Exception> onError = ex => show?.Invoke($"端口映射启动失败,原因:{ex.Message}");
-
-            cancellationTokenSource = new CancellationTokenSource();
-            var task = PortForwardWithIOCP(IPAddress.Parse("0.0.0.0"), localPort, host, port, onStart, onStop, onError, cancellationTokenSource.Token);
-
-
+            CancellationTokenSource = new CancellationTokenSource();
+            await PortForwardWithIOCP(IPAddress.Parse("0.0.0.0"));
         }
 
+        void OnStart()
+        {
+            show?.Invoke($"端口[221.231.130.70:{LocalPort}->{RemoteHost}:{RemotePort}]映射成功");
+        }
+
+        void OnStop()
+        {
+            Console.WriteLine("Port forwarding stopped.");
+        }
+
+
+        void OnError(Exception ex)
+        {
+            if (!(ex is ObjectDisposedException) && !(ex is InvalidOperationException))
+            {
+                show?.Invoke($"端口映射启动失败,原因:{ex.Message}");
+            }
+        }
     }
 }
