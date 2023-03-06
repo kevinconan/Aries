@@ -42,82 +42,105 @@ namespace Aris.Lib
 
         private async Task PortForwardWithIOCP(IPAddress localIP)
         {
-            var cancellationToken = CancellationTokenSource.Token;
-            IPHostEntry remoteHost = await Dns.GetHostEntryAsync(RemoteHost);
-            if (remoteHost.AddressList.Length == 0)
-            {
-                OnError(new ArgumentException($"Cannot resolve remote host: {RemoteHost}"));
-                return;
-            }
+            var token = CancellationTokenSource.Token;
 
             listener = new TcpListener(localIP, LocalPort);
             listener.Start();
             OnStart();
-            while (!cancellationToken.IsCancellationRequested)
+
+            while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    TcpClient client = await listener.AcceptTcpClientAsync();
+                    await Console.Out.WriteLineAsync($"[{localIP}:{LocalPort}]开始侦听……");
+
+                    TcpClient client = null;
+                    TcpClient server = null;
+
+                    try
+                    {
+                        client = await listener.AcceptTcpClientAsync();
+                    }
+                    catch
+                    {
+                        // 停止之后会多一次循环，这里会报错，没找到好的判断方式
+                        await Console.Out.WriteLineAsync($"[{localIP}:{LocalPort}]侦听已停止……");
+                        break;
+                    }
+
                     ThreadPool.QueueUserWorkItem(async delegate
                     {
                         using (client)
                         {
-                            TcpClient server = new TcpClient();
-                            await ConnectWithRetryAsync(server, remoteHost.AddressList[0], RemotePort, cancellationToken);
+                            server = new TcpClient();
+                            await server.ConnectAsync(RemoteHost, RemotePort);
 
                             using (server)
-                            using (NetworkStream clientStream = client.GetStream())
-                            using (NetworkStream serverStream = server.GetStream())
                             {
-                                await Task.WhenAny(
-                                    PortForward(client, clientStream, serverStream, localIP, LocalPort, cancellationToken),
-                                    PortForward(server, serverStream, clientStream, remoteHost.AddressList[0], RemotePort, cancellationToken));
+                                // 这个方法抛不出异常，在里面处理完
+                                await Task.WhenAny(PortForward(client, server, token), PortForward(server, client, token));
                             }
                         }
                     });
                 }
                 catch (Exception ex) { OnError(ex); }
             }
+
             OnStop();
         }
 
-        private async Task ConnectWithRetryAsync(TcpClient client, IPAddress address, int port, CancellationToken cancellationToken)
+        private async Task ConnectWithRetryAsync(TcpClient client, CancellationToken token)
         {
-            while (true)
+            var endpoint = GetClientIpEndPoint(client);
+            while (!token.IsCancellationRequested)
             {
+                await Console.Out.WriteLineAsync($"[{endpoint.Address}:{endpoint.Port}]正在建立连接……");
                 try
                 {
-                    await client.ConnectAsync(address, port).ConfigureAwait(false);
+                    await client.ConnectAsync(endpoint.Address, endpoint.Port).ConfigureAwait(false);
                     return;
                 }
                 catch
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    if (token.IsCancellationRequested)
                     {
                         throw;
                     }
-                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                    await Task.Delay(TimeSpan.FromSeconds(5), token);
                 }
             }
         }
 
-        private async Task PortForward(TcpClient client, NetworkStream from, NetworkStream to, IPAddress ip, int port, CancellationToken token)
+        private async Task PortForward(TcpClient inClient, TcpClient outClient, CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
-            {
-                try
-                {
-                    await from.CopyToAsync(to, 1024, token);
-                }
-                catch (Exception ex)
-                {
-                    OnError(ex);
+            var endpoint = GetClientIpEndPoint(inClient);
+            var bufferSize = 8;
+            await Console.Out.WriteLineAsync($"[{endpoint}] buffer size: {bufferSize}");
 
-                    await ConnectWithRetryAsync(client, ip, port, token);
-                    from.Flush(); // 清空缓冲区
-                    to.Flush(); // 清空缓冲区
+            using (var inStream = inClient.GetStream())
+            using (var outStream = outClient.GetStream())
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        await inStream.CopyToAsync(outStream, bufferSize, token);
+                    }
+                    catch (Exception ex)
+                    {
+                        await Console.Out.WriteLineAsync($"[{endpoint}]连接中断：{ex.Message}");
+                        inStream.Flush(); // 清空缓冲区
+                        outStream.Flush(); // 清空缓冲区
+                        break;
+                    }
                 }
             }
+
+        }
+
+        private IPEndPoint GetClientIpEndPoint(TcpClient client)
+        {
+            return client.Client.RemoteEndPoint as IPEndPoint;
         }
 
         public void Stop()
@@ -149,7 +172,7 @@ namespace Aris.Lib
 
         void OnStop()
         {
-            Console.WriteLine("Port forwarding stopped.");
+            //Console.WriteLine("Port forwarding stopped.");
         }
 
 

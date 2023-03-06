@@ -128,7 +128,7 @@ namespace Aries.Lib
                         }
 #if DEBUG
 
-                        Console.WriteLine("冒险岛窗口句柄----->>>>>"+process.MainWindowHandle);
+                        // Console.WriteLine("冒险岛窗口句柄----->>>>>"+process.MainWindowHandle);
 
 #endif
 
