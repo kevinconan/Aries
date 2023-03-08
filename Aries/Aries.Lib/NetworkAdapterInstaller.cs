@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.IO;
+using System.Management;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using System.IO;
-using System.Threading;
-using System.Management;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
 
 namespace Aries.Lib
 {
     public enum NetForwardMode
     {
         Adapter = 0,
-        Route =1
+        Route = 1
     }
     public static class NetworkAdapterInstaller
     {
@@ -35,17 +32,19 @@ namespace Aries.Lib
         public static NetForwardMode InstallMode = NetForwardMode.Adapter;
 
 
-        public async static void ChangeMode(NetForwardMode mode,Action<bool> callback)
+        public async static void ChangeMode(NetForwardMode mode, Action<bool> callback)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 InstallMode = mode;
                 if (mode == NetForwardMode.Adapter)
                 {
                     SendMessage("正在启用虚拟网卡模式..");
                     callback(DisableRedirection());
-                    
 
-                }else
+
+                }
+                else
                 {
                     SendMessage("正在启用路由模式..");
                     callback(DisableLoopAdapters());
@@ -57,15 +56,17 @@ namespace Aries.Lib
 
         public async static void CheckAndInstallAdapter(Action<bool> callback)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 if (InstallMode == NetForwardMode.Adapter)
                 {
                     callback(ReleaseDevcon() && CheckAndOpenAdapter());
-                }else
+                }
+                else
                 {
                     callback(OpenSuperMode());
                 }
-                
+
             });
 
         }
@@ -122,14 +123,16 @@ namespace Aries.Lib
                     SendMessage("开始设置网卡信息");
                     return SetAdapter();
                 }
-            }else
+            }
+            else
             {
                 SendMessage("未找到已安装的虚拟网卡...开始安装..");
                 if (InstallAdapter())
                 {
                     SendMessage("开始设置网卡信息");
                     return SetAdapter();
-                }else
+                }
+                else
                 {
                     return false;
                 }
@@ -142,7 +145,7 @@ namespace Aries.Lib
             var adapterList = QueryAdapterByPnp(PNPDeviceID);
             if (adapterList.Count > 0)
             {
-                RunCmd($"devcon.exe /r remove @{PNPDeviceID}",DEBUGWriteToConsole);
+                RunCmd($"devcon.exe /r remove @{PNPDeviceID}", DEBUGWriteToConsole);
                 var list2 = QueryAdapterByPnp(PNPDeviceID);
                 if (list2.Count > 0)
                 {
@@ -196,18 +199,19 @@ namespace Aries.Lib
 
         public async static void CloseNetwork()
         {
-            await Task.Run(()=>{
+            await Task.Run(() =>
+            {
                 try
                 {
                     DisableRedirection();
                     DisableLoopAdapters();
-                    
+
                 }
                 catch { }
             });
-            
 
-            
+
+
         }
 
         private static bool DisableRedirection()
@@ -255,7 +259,7 @@ namespace Aries.Lib
                 {
                     SendMessage($"找到虚拟网卡{item["Name"]}");
                     RunCmd($"devcon.exe /r remove @{item["PNPDeviceID"]}", DEBUGWriteToConsole);
-                    
+
                 }
                 if (QuerySysinfo("Win32_NetworkAdapter", $"Caption like '%Loopback Adapter%'").Count == 0)
                 {
@@ -284,10 +288,10 @@ namespace Aries.Lib
             {
                 if (!(bool)mo["IPEnabled"]) continue;
                 inPar = mo.GetMethodParameters("EnableStatic");
-                inPar["IPAddress"] = new string[] { "221.231.130.70"};//ip地址  
-                inPar["SubnetMask"] = new string[] { "255.255.255.0"}; //子网掩码   
+                inPar["IPAddress"] = new string[] { "221.231.130.70" };//ip地址  
+                inPar["SubnetMask"] = new string[] { "255.255.255.0" }; //子网掩码   
                 mo.InvokeMethod("EnableStatic", inPar, null);//执行 
-                SendMessage("网卡信息设置成功！"); 
+                SendMessage("网卡信息设置成功！");
                 return true;
             }
             SendErrorMessage("未找到可设置的虚拟网卡！");
@@ -297,21 +301,21 @@ namespace Aries.Lib
 
         private static List<ManagementBaseObject> QueryAdapterByPnp(string PNPDeviceID)
         {
-            var query = new ManagementObjectSearcher($"select * from Win32_NetworkAdapter where PNPDeviceID = '{PNPDeviceID.Replace(@"\",@"\\")}'");
+            var query = new ManagementObjectSearcher($"select * from Win32_NetworkAdapter where PNPDeviceID = '{PNPDeviceID.Replace(@"\", @"\\")}'");
 
             List<ManagementBaseObject> adapterIds = new List<ManagementBaseObject>();
-                foreach (ManagementBaseObject item in query.Get())
-                {
-                    adapterIds.Add(item);
-                }
-            
+            foreach (ManagementBaseObject item in query.Get())
+            {
+                adapterIds.Add(item);
+            }
+
             return adapterIds;
         }
 
 
-        private static List<ManagementBaseObject> QuerySysinfo(string Table,string whereClause)
+        private static List<ManagementBaseObject> QuerySysinfo(string Table, string whereClause)
         {
-            
+
             var query = new ManagementObjectSearcher($"select * from {Table} where {whereClause}");
 
             List<ManagementBaseObject> adapterIds = new List<ManagementBaseObject>();
@@ -364,10 +368,11 @@ namespace Aries.Lib
         public async static void ResetNetworkSettings()
         {
 
-            await Task.Run(()=> {
+            await Task.Run(() =>
+            {
                 SendMessage("正在重置网络..,");
                 SendMessage("正在清空重定向设置...");
-                int[] ports = new int[13] { 8484, 8600 , 8700, 7575, 7576, 7577, 7578, 7579, 7580, 7581, 7582, 7583, 7584, };
+                int[] ports = new int[13] { 8484, 8600, 8700, 7575, 7576, 7577, 7578, 7579, 7580, 7581, 7582, 7583, 7584, };
                 StringBuilder sb = new StringBuilder();
                 foreach (int port in ports)
                 {
@@ -383,7 +388,7 @@ namespace Aries.Lib
                 SendMessage("网络配置重置成功！");
             });
 
-           
+
         }
         #endregion
 
@@ -393,9 +398,9 @@ namespace Aries.Lib
             Directory.CreateDirectory(ARIESDIR);
             string fileName = Environment.Is64BitOperatingSystem ? X64FILE : X86FILE;
             string validMD5 = Environment.Is64BitOperatingSystem ? X64MD5 : X86MD5;
-            if (!FileUtil.FileMD5Validation(validMD5,OUTFILE))
+            if (!FileUtil.FileMD5Validation(validMD5, OUTFILE))
             {
-                
+
                 byte[] devcon = Environment.Is64BitOperatingSystem ? Resource.devcon_x64 : Resource.devcon_x86;
                 try
                 {
@@ -437,17 +442,21 @@ namespace Aries.Lib
 
         private static bool PingTest()
         {
-            System.Net.NetworkInformation.Ping p = new System.Net.NetworkInformation.Ping();
-            System.Net.NetworkInformation.PingOptions options = new System.Net.NetworkInformation.PingOptions();
-            options.DontFragment = true;
-            string data = "Test Data!";
-            byte[] buffer = Encoding.ASCII.GetBytes(data);
-            int timeout = 1000; // Timeout 时间，单位：毫秒  
-            System.Net.NetworkInformation.PingReply reply = p.Send("221.231.130.70", timeout, buffer, options);
-            if (reply.Status == System.Net.NetworkInformation.IPStatus.Success)
-                return true;
-            else
-                return false;
+            using (var p = new Ping())
+            {
+                var options = new PingOptions
+                {
+                    DontFragment = true
+                };
+                string data = "Test Data!";
+                byte[] buffer = Encoding.ASCII.GetBytes(data);
+                int timeout = 1000; // Timeout 时间，单位：毫秒  
+                var reply = p.Send("221.231.130.70", timeout, buffer, options);
+                if (reply.Status == IPStatus.Success)
+                    return true;
+                else
+                    return false;
+            }
         }
 
 

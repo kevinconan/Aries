@@ -160,9 +160,17 @@ namespace Aris.Lib
 
         public async void Start()
         {
-            IsRunning = true;
-            CancellationTokenSource = new CancellationTokenSource();
-            await PortForwardWithIOCP(IPAddress.Parse("0.0.0.0"));
+            try
+            {
+                IsRunning = true;
+                CancellationTokenSource = new CancellationTokenSource();
+                await PortForwardWithIOCP(IPAddress.Parse("0.0.0.0"));
+            }
+            catch (Exception ex)
+            {
+                OnError(ex);
+                await Console.Out.WriteLineAsync($"端口[221.231.130.70:{LocalPort}->{RemoteHost}:{RemotePort}]映射失败");
+            }
         }
 
         void OnStart()
